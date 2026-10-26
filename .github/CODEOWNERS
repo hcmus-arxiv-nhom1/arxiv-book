@@ -1,0 +1,12 @@
+# Owner theo RACI: PR chạm vào file nào sẽ tự gán reviewer tương ứng.
+# Đăng = DankDaPancake, Tiến = tien140406, Hiếu = Hiulaptop, Thiên = CaoThien1402
+*                        @Hiulaptop
+/index.md                @DankDaPancake
+/m1/index.md             @DankDaPancake
+/m1/01-methodology.md    @DankDaPancake @CaoThien1402
+/m1/04-discussion.md     @DankDaPancake
+/m1/02-data-stats.ipynb  @tien140406
+/data/                   @tien140406
+/m1/03-performance.ipynb @Hiulaptop
+/myst.yml                @Hiulaptop
+/.github/                @Hiulaptop

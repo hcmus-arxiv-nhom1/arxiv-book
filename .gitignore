@@ -1,0 +1,10 @@
+_build/
+figures/
+.ipynb_checkpoints/
+__pycache__/
+.venv/
+venv/
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db

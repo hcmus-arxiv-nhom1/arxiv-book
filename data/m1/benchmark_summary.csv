@@ -1,0 +1,7 @@
+metric,value,unit,tool
+wall_time_e2e,5321,s,/usr/bin/time -v
+discovery_time,182,s,time.perf_counter
+ram_max,412,MB,"psutil (RSS tổng, gồm process con)"
+ram_mean,268,MB,"psutil (RSS tổng, gồm process con)"
+disk_max,1840,MB,du -sb
+output_size,236,MB,du -sb
