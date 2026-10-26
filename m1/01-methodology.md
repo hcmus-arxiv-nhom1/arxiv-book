@@ -1,94 +1,98 @@
-# Phương pháp thu thập
+# Crawling methodology
 
-<!-- Owner: Đăng, Thiên. Phần kỹ thuật crawler do Thiên viết với sự hỗ trợ của AI assistant (Claude, Anthropic), ghi nguồn theo quy định môn học. -->
+<!-- Owners: Đăng, Thiên. The crawler sections were written by Thiên with the help of an AI assistant (Claude, Anthropic), cited per the course rules. -->
 
-Chương này mô tả cách nhóm thu thập corpus của Milestone 1: tìm các bài trong dải ID được giao, tải **mọi version** mã nguồn LaTeX, chỉ giữ `.tex` và `.bib`, và lấy metadata reference từ Semantic Scholar {cite}`hcmus-statement`. Code nằm trong [code repo](https://github.com/hcmus-arxiv-nhom1/CodeRepo) (`src/crawler/`, `src/run_pipeline.py`); schema dữ liệu nằm trong `docs/data_contract.md` của repo đó.
+This chapter describes how the group built the Milestone 1 corpus: resolving the assigned arXiv IDs, downloading the LaTeX source of **every version**, keeping only `.tex` and `.bib` files, and collecting reference metadata from Semantic Scholar {cite}`hcmus-statement`. The code lives in the [code repository](https://github.com/hcmus-arxiv-nhom1/CodeRepo) (`src/crawler/`, `src/run_pipeline.py`); the data schema is fixed in `docs/data_contract.md` of that repository.
 
-## Phạm vi dữ liệu
+## Scope
 
-Nhóm phụ trách 20.000 arXiv ID, chia thành 4 dải × 5.000 ID theo bảng đăng ký:
+The group is responsible for 20,000 arXiv IDs, split into four ranges of 5,000 IDs as given by the registration sheet:
 
-| Thành viên | Dải ID |
+| Member | ID range |
 | --- | --- |
 | Cao Tiến Thiên | `2606.30734` → `2607.03693` |
 | Trần Minh Tiến | `2606.25734` → `2606.30733` |
 | Trương Lê Trung Hiếu | `2606.05734` → `2606.10733` |
 | Lý Huỳnh Minh Đăng | `2604.20535` → `2604.25534` |
 
-Số thứ tự arXiv bắt đầu lại từ `00001` ở mỗi tháng, nên dải `2606.30734` → `2607.03693` không phải một dãy số liên tục. Crawler sinh ID **theo từng tháng** (`iter_id_range`), dùng số thứ tự cuối của tháng 6. Số này được tìm bằng arXiv API: `2606.32040` tồn tại, `2606.32041` trở đi thì không. Vậy dải có đúng 1.307 + 3.693 = 5.000 ID.
+arXiv sequence numbers restart at `00001` every month, so the range `2606.30734` → `2607.03693` is not one run of consecutive numbers. The crawler generates IDs **month by month** (`iter_id_range`) using the last sequence number of June, which was looked up with the arXiv API: `2606.32040` exists and `2606.32041` onwards do not. The range therefore holds exactly 1,307 + 3,693 = 5,000 IDs.
 
-## Quy trình crawl
+## Pipeline
 
 ```{mermaid}
 flowchart LR
-    R["Dải ID"] --> G["Sinh ID theo tháng"]
+    R["ID range"] --> G["Month-aware ID generation"]
     G --> D["Discovery<br/>arXiv API id_list"]
     D -->|metadata.json| C[("corpus/&lt;yymm-id&gt;/")]
-    D --> V["Hàng đợi version<br/>bỏ qua version đã xong"]
-    V --> DL["Tải /src/{id}vN"]
-    DL --> X["Nhận diện loại file<br/>chỉ giữ .tex, .bib"]
+    D --> V["Version queue<br/>skip finished versions"]
+    V --> DL["Download /src/{id}vN"]
+    DL --> X["File type detection<br/>keep .tex, .bib"]
     X -->|vN/| C
-    X -->|1 dòng / version| J[("work/versions.jsonl")]
-    D -. thread riêng .-> S["Semantic Scholar<br/>POST /paper/batch"]
+    X -->|one line per version| J[("work/versions.jsonl")]
+    D -. separate thread .-> S["Semantic Scholar<br/>POST /paper/batch"]
     S -->|references.json| C
 ```
 
-1. **Discovery** {cite}`arxiv-api`. Gọi arXiv API `id_list` với 100 ID mỗi request, tức khoảng 50 request cho 5.000 ID. Kết quả cho title, authors, `journal_ref` (venue), DOI, và **ID của version mới nhất**: hậu tố `vN` cho biết bài có bao nhiêu version. `published` là ngày của v1, `updated` là ngày của version mới nhất. Bài có từ 3 version trở lên thì lấy ngày của v2…v(N-1) bằng truy vấn ID có version (`2606.30762v2`). OAI-PMH `arXivRaw` {cite}`arxiv-oai` là đường dự phòng cho ID mà API không trả về.
-2. **Tải source.** Mỗi version được tải riêng qua `https://export.arxiv.org/src/{id}vN`, kể cả bài chỉ có `v1`. Body được ghi ra file `.part` và chỉ đổi tên khi đủ `Content-Length`.
-3. **Nhận diện loại file bằng magic bytes**, không tin đuôi file {cite}`arxiv-mimetypes`:
+1. **Discovery** {cite}`arxiv-api`. The arXiv API is queried with `id_list`, 100 IDs per request, which is about 50 requests for 5,000 IDs. The answer gives the title, authors, `journal_ref` (venue), DOI and the **identifier of the latest version**: its `vN` suffix tells how many versions a paper has. `published` is the date of v1 and `updated` the date of the latest version. For papers with three or more versions, the dates of v2…v(N-1) come from versioned queries (`2606.30762v2`). OAI-PMH `arXivRaw` {cite}`arxiv-oai` is the fallback for IDs the API does not return.
+2. **Source download.** Every version is fetched on its own from `https://export.arxiv.org/src/{id}vN`, including papers that only have `v1`. The body is streamed to a `.part` file and renamed only once `Content-Length` matches.
+3. **File type detection by magic bytes**, never by file name {cite}`arxiv-mimetypes`:
 
-   | Byte đầu | Loại | Xử lý |
+   | First bytes | Kind | Handling |
    | --- | --- | --- |
-   | `1f 8b` + header tar | `tar.gz` | Đọc từng member, chỉ ghi `.tex` và `.bib` |
-   | `1f 8b`, bên trong là TeX | `gz` một file | Ghi thành một file `.tex` |
-   | `1f 8b`, bên trong là HTML | `html.gz` | Bài nộp bằng HTML (vd. kỷ yếu EPTCS) → record rỗng |
-   | `%PDF`, `%!PS` | Chỉ có PDF/PS | Record rỗng |
-   | HTML không nén, HTTP 200 | Trang lỗi | `failed`, thử lại ở lần chạy sau |
-   | HTTP 404/410 | Version không còn source | `unavailable`, record rỗng |
+   | `1f 8b` + tar header | `tar.gz` | Read member by member, write only `.tex` and `.bib` |
+   | `1f 8b`, TeX inside | single gzipped file | Written as one `.tex` file |
+   | `1f 8b`, HTML inside | `html.gz` | HTML submission (e.g. an EPTCS proceedings volume) → empty record |
+   | `%PDF`, `%!PS` | PDF / PostScript only | Empty record |
+   | plain HTML with HTTP 200 | Error page | `failed`, retried on the next run |
+   | HTTP 404/410 | Source no longer available | `unavailable`, empty record |
 
-4. **Xoá hình bằng cách trích xuất** đúng như đề yêu cầu: chỉ ghi `.tex` và `.bib`, nên file hình không bao giờ vào corpus. Nội dung `.tex` giữ nguyên byte, môi trường `figure` và lệnh `\includegraphics` vẫn còn cho Milestone 2. Member có đường dẫn tuyệt đối, `..`, symlink hoặc tên không hợp lệ đều bị bỏ qua. Mỗi version ghi lại kích thước trước/sau khi lọc và danh sách đuôi file bị bỏ (`dropped`) vào `work/versions.jsonl`.
-5. **Reference metadata** {cite}`s2-api`. Một thread riêng gọi `POST /paper/batch` của Semantic Scholar với 100 bài mỗi request. API trả về **toàn bộ** danh sách reference của từng bài, nên 20.000 bài chỉ cần khoảng 200 request. Mọi reference đều được lưu, có hay không có arXiv ID. Bài có danh sách quá dài được lấy lại đầy đủ qua endpoint `/paper/{id}/references` theo trang.
+4. **Figure removal by extraction**, as the statement requires: only `.tex` and `.bib` members are written, so figure binaries never enter the corpus. `.tex` files are kept byte for byte, so `figure` environments and `\includegraphics` commands remain for Milestone 2. Members with absolute paths, `..`, links or names the file system cannot store are skipped. For every version the crawler records the size before and after filtering and the extensions it dropped (`dropped`) in `work/versions.jsonl`.
+5. **Reference metadata** {cite}`s2-api`. A separate thread calls Semantic Scholar's `POST /paper/batch` with 100 papers per request. The answer contains the **complete** reference list of each paper, so 20,000 papers need only about 200 requests. Every reference is kept, with or without an arXiv ID. A paper whose list is too long is completed through the paginated `/paper/{id}/references` endpoint.
 
 ## Politeness
 
-Terms of Use của arXiv yêu cầu *"no more than 1 request every 3 seconds"* và một kết nối tại một thời điểm, tính trên mọi máy của nhóm {cite}`arxiv-tou`.
+arXiv's Terms of Use ask for *"no more than 1 request every 3 seconds"* and a single connection at a time, counted over all machines of the group {cite}`arxiv-tou`.
 
-- **Một `RateLimiter` dùng chung** cho mọi request tới arXiv (API, OAI-PMH, `/src/`). Khoá được giữ suốt request, nên không bao giờ có hai request arXiv cùng lúc. Các lần bắt đầu request cách nhau ≥ 3 s cộng jitter ngẫu nhiên 0–0,1 s. `run.log` ghi `gap` của từng request để kiểm chứng; lần chạy thử ngày 27/10 đo được khoảng cách nhỏ nhất là 3,015 s.
-- Chỉ gọi mirror `export.arxiv.org` và `oaipmh.arxiv.org`, không bao giờ gọi `arxiv.org`. User-Agent mô tả rõ đây là đồ án môn học.
-- **Một lần chạy cho mỗi thư mục làm việc:** `run_pipeline` giữ khoá cấp hệ điều hành trên `work/run.lock`. Corpus được thu thập bằng **một** instance, chia ca giữa các thành viên, không chạy hai máy cùng lúc.
-- **Retry:** lỗi kết nối, timeout, đứt kết nối giữa chừng, 429 và 5xx được thử lại tối đa 5 lần, backoff `2^n` giây cộng jitter, ưu tiên `Retry-After`. Ba lần 403 liên tiếp → dừng 15–30 phút và giảm nhịp còn 5 s; lặp lại quá 3 lần thì dừng hẳn để chạy lại sau.
-- **Semantic Scholar có limiter riêng:** 1,1 s mỗi request khi có API key, 3 s khi không có, tương ứng giới hạn 100 request mỗi 5 phút.
+- **One shared `RateLimiter`** serves every arXiv request (API, OAI-PMH, `/src/`). Its lock is held for the whole request, so two arXiv requests never overlap. Request starts are at least 3 s apart plus a random jitter of 0–0.1 s. `run.log` records the `gap` of every request so the pace can be audited; a test run on 27/10/2026 measured a minimum gap of 3.015 s.
+- Requests go only to the mirrors `export.arxiv.org` and `oaipmh.arxiv.org`, never to `arxiv.org`, with a descriptive User-Agent.
+- **One run per work directory:** `run_pipeline` holds an operating-system lock on `work/run.lock`. The corpus is collected by **one** instance, in shifts shared by the members, never on two machines at once.
+- **Retries:** connection errors, timeouts, bodies cut mid-transfer, 429 and 5xx are retried up to 5 times with a `2^n` s backoff plus jitter, honouring `Retry-After`. Three consecutive 403 answers pause the crawl for 15–30 minutes and slow the pace to 5 s; more than three such pauses stop the run so it can be resumed later.
+- **Semantic Scholar has its own limiter:** 1.1 s per request with an API key, 3 s without one, matching the limit of 100 requests per 5 minutes.
 
-## Cấu trúc dữ liệu đầu ra
+## Output layout
 
 ```text
 data/corpus/
-  2606-30734/                # arXiv ID dạng yymm-id
+  2606-30734/                # arXiv ID as yymm-id
     metadata.json            # arxiv_id, title, authors[], submission_date, revised_dates[], venue, num_versions
-    references.json          # mọi reference S2 trả về: title, authors, ngày, arXiv ID (nếu có), S2 ID
-    v1/                      # chỉ .tex/.bib; rỗng nếu version không có TeX
+    references.json          # every reference returned by S2: title, authors, date, arXiv ID (if any), S2 ID
+    v1/                      # .tex/.bib only; empty when the version has no TeX source
     v2/
 work/
-  versions.jsonl             # mỗi version một dòng: trạng thái, loại file, kích thước, file bị bỏ, thời gian
-  discovery.jsonl  failed.csv  run_summary.json  run.log
+  versions.jsonl             # one line per version: status, kind, sizes, dropped files, timings
+  discovery.jsonl  failed.csv  run_summary.json  run.log  profile/
 ```
 
-`metadata.json` có đủ các cột của bảng `papers`; reference có arXiv ID trong `references.json` là nguồn của bảng `references` ở Milestone 3.
+`metadata.json` holds every column of the `papers` table; the references of `references.json` that carry an arXiv ID become the `references` table of Milestone 3.
 
 ## Resume
 
-Mỗi version xong được ghi ngay một dòng vào `work/versions.jsonl` (flush và fsync), nên dừng cứng cũng không mất dòng đã ghi. Chạy lại **đúng lệnh cũ** thì crawler bỏ qua version đã ở trạng thái cuối và thử lại version `failed`; `metadata.json` và `references.json` đã có cũng được bỏ qua. Trong lần chạy thử, dừng cứng sau 16 version rồi chạy lại: 16/16 version được bỏ qua, không có dòng ghi trùng.
+Every finished version is appended to `work/versions.jsonl` at once (flushed and fsynced), so even a hard kill loses no finished line. Running the **same command** again skips versions already in a final state and retries `failed` ones; existing `metadata.json` and `references.json` files are skipped too. In a test, the crawl was killed after 16 versions and restarted: all 16 were skipped and no line was written twice.
 
-## Định nghĩa "thành công"
+## Benchmark protocol
 
-- **Bài thành công:** bài có trên arXiv và **mọi version** đều ở trạng thái cuối `ok`, `no_tex` hoặc `unavailable`, kèm thư mục `vN/`. Version không có TeX vẫn được tính là đã crawl xong, vì đề yêu cầu giữ record rỗng chứ không bỏ bài. Định nghĩa này trùng với `papers_complete` trong `run_summary.json` và cột `n_versions_ok == n_versions` của notebook thống kê.
-- **Success rate của reference metadata:** tỉ lệ bài mà Semantic Scholar trả về được (`status = ok`). Notebook báo thêm tỉ lệ reference S2 resolve được metadata (`s2_id` khác `null`).
+The statement measures the running time over *"each of the required papers"*, with *"no upper limit on the running time"*, on *"a Google Colab instance running on CPU-only mode"*. The group therefore benchmarks the **official crawl of all 20,000 IDs itself** rather than a sample. Each chunk of 500 IDs runs on Colab CPU-only under `/usr/bin/time -v` and the group's profiler (`src/utils/profiler.py`), which samples every second the resident memory of the crawler **and all its child processes** and walks the size of `data/` and `work/`. The [Performance](03-performance.ipynb) chapter aggregates the chunks: wall time is the sum over chunks, peak RAM and peak disk are the maxima, and average RAM is weighted by duration.
 
-## Quan sát từ lần chạy thử (4 × 200 ID, 19–20/10/2026, laptop)
+## Definition of success
 
-Đây chưa phải benchmark chính thức; số đo hiệu năng ở chương [Hiệu năng](03-performance.ipynb) chạy trên Google Colab CPU-only.
+- **A paper is crawled successfully** when it exists on arXiv and **every version** reached a final status `ok`, `no_tex` or `unavailable` with its `vN/` folder. A version without TeX counts as done, because the statement asks to keep an empty record instead of dropping the paper. This matches `papers_complete` in `run_summary.json` and the test `n_versions_ok == n_versions` in the statistics notebook.
+- **The success rate of reference metadata** is the share of papers Semantic Scholar knows (`status = ok`). The notebook also reports the share of references whose metadata S2 could resolve (`s2_id` not null).
 
-- Sau khi chạy lại một lần, cả 4 dải đạt 200/200 bài đầy đủ. 57/1.061 version (5,4 %) không có TeX: PDF/HTML hoặc arXiv trả 404.
-- Lỗi thường gặp nhất là arXiv đóng kết nối giữa chừng khi tải file lớn, và HTTP 429 vào giờ cao điểm. Cả hai đều được retry và resume xử lý.
-- Giải nén chỉ mất 19 ms ở trung vị (p90 là 66 ms), không đáng kể so với nhịp 3 s. Vì vậy nhóm không tách giải nén ra process riêng; phần chạy song song có lợi là Semantic Scholar.
-- Semantic Scholar: 700 bài đầu tiên chỉ cần 18 request batch. Trung bình 35,6 reference mỗi bài, 49,9 % reference có arXiv ID.
+## Observations from the test runs (4 × 200 IDs, 19–20/10/2026, laptop)
+
+These are not the official benchmark, which runs on Google Colab (CPU-only).
+
+- After one resume, all four ranges reached 200/200 complete papers. 57 of 1,061 versions (5.4 %) have no TeX source: PDF or HTML only, or a 404 from arXiv.
+- The most frequent errors were connections closed by arXiv in the middle of large downloads and HTTP 429 at peak hours; retries and resume handled both.
+- Extraction takes 19 ms at the median (66 ms at p90), negligible next to the 3 s pace. The group therefore did not move extraction to a separate process; the part worth running in parallel is Semantic Scholar.
+- Semantic Scholar: the 800 test papers needed 21 batch requests; they have 35.6 references on average, 49.9 % of which carry an arXiv ID.

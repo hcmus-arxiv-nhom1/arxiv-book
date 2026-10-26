@@ -1,17 +1,17 @@
-# Thảo luận
+# Discussion
 
 ```{note}
-Chương này đang soạn (owner: Đăng, mọi người góp ý qua PR).
+This chapter is being written (owner: Đăng; everyone comments through pull requests).
 ```
 
-## Kết quả chính
+## Main results
 
 `TODO`
 
-## Hạn chế
+## Limitations
 
 `TODO`
 
-## Hướng cải thiện
+## Possible improvements
 
 `TODO`
