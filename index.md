@@ -6,10 +6,10 @@ Book báo cáo đồ án môn Nhập môn Khoa học Dữ liệu (HCMUS). Mọi 
 
 | Họ tên | MSSV | GitHub | Vai trò |
 |---|---|---|---|
-| Cao Tiến Thiên | `TODO` | [@CaoThien1402](https://github.com/CaoThien1402) | Crawler core |
-| Trần Minh Tiến | `TODO` | [@tien140406](https://github.com/tien140406) | Thống kê dữ liệu |
-| Trương Lê Trung Hiếu | `TODO` | [@Hiulaptop](https://github.com/Hiulaptop) | Benchmark, hạ tầng book |
-| Lý Huỳnh Minh Đăng | `TODO` | [@DankDaPancake](https://github.com/DankDaPancake) | Phương pháp, thảo luận, nộp bài |
+| Cao Tiến Thiên | 24127122 | [@CaoThien1402](https://github.com/CaoThien1402) | Crawler core |
+| Trần Minh Tiến | 24127130 | [@tien140406](https://github.com/tien140406) | Thống kê dữ liệu |
+| Trương Lê Trung Hiếu | 24127169 | [@Hiulaptop](https://github.com/Hiulaptop) | Benchmark, hạ tầng book |
+| Lý Huỳnh Minh Đăng | 24127272 | [@DankDaPancake](https://github.com/DankDaPancake) | Phương pháp, thảo luận, nộp bài |
 
 ## Liên kết
 
