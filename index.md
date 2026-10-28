@@ -1,35 +1,35 @@
-# arXiv Citation Pipeline — Nhóm 1
+# arXiv Citation Pipeline — Group 1
 
-Book báo cáo đồ án môn Nhập môn Khoa học Dữ liệu (HCMUS). Mọi bảng và biểu đồ trong book được sinh lúc build từ các file CSV trong `data/`.
+Project report for the course Introduction to Data Science (University of Science, VNU-HCM). Every table and figure in this book is generated at build time from the CSV files in `data/`.
 
-## Thành viên
+## Members
 
-| Họ tên | MSSV | GitHub | Vai trò |
+| Name | Student ID | GitHub | Role |
 |---|---|---|---|
-| Cao Tiến Thiên | `TODO` | [@CaoThien1402](https://github.com/CaoThien1402) | Crawler core |
-| Trần Minh Tiến | `TODO` | [@tien140406](https://github.com/tien140406) | Thống kê dữ liệu |
-| Trương Lê Trung Hiếu | `TODO` | [@Hiulaptop](https://github.com/Hiulaptop) | Benchmark, hạ tầng book |
-| Lý Huỳnh Minh Đăng | `TODO` | [@DankDaPancake](https://github.com/DankDaPancake) | Phương pháp, thảo luận, nộp bài |
+| Cao Tiến Thiên | 24127122 | [@CaoThien1402](https://github.com/CaoThien1402) | Data pipeline and crawler |
+| Trần Minh Tiến | 24127130 | [@tien140406](https://github.com/tien140406) | Preprocessing, EDA and QA |
+| Trương Lê Trung Hiếu | 24127169 | [@Hiulaptop](https://github.com/Hiulaptop) | Infrastructure, benchmark and book |
+| Lý Huỳnh Minh Đăng | 24127272 | [@DankDaPancake](https://github.com/DankDaPancake) | Methodology, modeling and submission |
 
-## Liên kết
+## Links
 
-- **Code repo:** <https://github.com/hcmus-arxiv-nhom1/CodeRepo>
-- **Book (link nộp Moodle):** <https://hcmus-arxiv-nhom1.github.io/arxiv-book/>
-- Notebook benchmark trên Colab: `TODO` (nằm trong code repo)
+- **Code repository:** <https://github.com/hcmus-arxiv-nhom1/CodeRepo>
+- **This book (Moodle submission link):** <https://hcmus-arxiv-nhom1.github.io/arxiv-book/>
+- Colab benchmark notebook: `src/notebooks/colab_benchmark.ipynb` in the code repository
 
-## Mục lục
+## Contents
 
-- **Section 1 — Milestone 1: Thu thập dữ liệu**
-  - [Tổng quan M1](m1/index.md)
-  - [Phương pháp crawl](m1/01-methodology.md)
-  - [Thống kê dữ liệu](m1/02-data-stats.ipynb)
-  - [Hiệu năng](m1/03-performance.ipynb)
-  - [Thảo luận](m1/04-discussion.md)
-- **Section 2 — Milestone 2: Xử lý LaTeX**
-  - [Tổng quan M2](m2/index.md)
+- **Section 1 — Milestone 1: Data Crawling**
+  - [Overview](m1/index.md)
+  - [Crawling methodology](m1/01-methodology.md)
+  - [Data statistics](m1/02-data-stats.ipynb)
+  - [Performance](m1/03-performance.ipynb)
+  - [Discussion](m1/04-discussion.md)
+- **Section 2 — Milestone 2: Hierarchical Parsing and Standardization**
+  - [Overview](m2/index.md)
 
-Cập nhật gần nhất: 2026-10-26.
+Last updated: 2026-10-27.
 
-## Khai báo sử dụng AI và tài liệu ngoài
+## Use of AI and external sources
 
-Một phần code và văn bản của nhóm được soạn với sự hỗ trợ của AI assistant (Claude, Anthropic) {cite}`anthropic-claude`; các file liên quan có ghi chú ở đầu file. Dữ liệu được thu thập qua arXiv API {cite}`arxiv-api` và Semantic Scholar API {cite}`s2-api`. Danh sách đầy đủ ở mục tài liệu tham khảo của từng chương.
+Part of the group's code and text was drafted with the help of an AI assistant (Claude, Anthropic) {cite}`anthropic-claude`; the files concerned carry a note at the top. Data was collected through the arXiv API {cite}`arxiv-api` and the Semantic Scholar API {cite}`s2-api`. Each chapter lists its full references.

@@ -1,7 +1,7 @@
 # Drafted with the help of an AI assistant (Claude, Anthropic), cited per the course rules.
 version: 1
 project:
-  title: "arXiv Citation Pipeline — Nhóm 1"
+  title: "arXiv Citation Pipeline — Group 1"
   authors:
     - name: Cao Tiến Thiên
     - name: Trần Minh Tiến
@@ -13,14 +13,14 @@ project:
     - README.md
   toc:
     - file: index.md
-    - title: "Milestone 1 — Thu thập dữ liệu"
+    - title: "Milestone 1 — Data Crawling"
       children:
         - file: m1/index.md
         - file: m1/01-methodology.md
         - file: m1/02-data-stats.ipynb
         - file: m1/03-performance.ipynb
         - file: m1/04-discussion.md
-    - title: "Milestone 2 — Xử lý LaTeX"
+    - title: "Milestone 2 — Hierarchical Parsing and Standardization"
       children:
         - file: m2/index.md
 site:
