@@ -20,6 +20,7 @@ project:
         - file: m1/02-data-stats.ipynb
         - file: m1/03-performance.ipynb
         - file: m1/04-discussion.md
+        - file: m1/arxiv_nhom1_crawl_benchmark.ipynb
     - title: "Milestone 2 — Hierarchical Parsing and Standardization"
       children:
         - file: m2/index.md

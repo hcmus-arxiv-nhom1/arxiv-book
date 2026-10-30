@@ -16,6 +16,22 @@ jupyter book start --execute                    # xem trực tiếp ở http://l
 jupyter book build --html --execute             # build tĩnh vào _build/html
 ```
 
+## Notebook crawl và benchmark M1
+
+Book nhúng `m1/arxiv_nhom1_crawl_benchmark.ipynb` như một trang chỉ đọc, có link mở đúng phiên bản trên Colab và tải notebook. Notebook có metadata `skip-execution`: CI vẫn execute các notebook phân tích CSV, nhưng không crawl, mount Drive hay đọc Secrets.
+
+Bản gốc nằm ở `CodeRepo/src/notebooks/arxiv_nhom1_crawl_benchmark.ipynb`. Không sửa code cell của bản nhúng bằng tay. Để cập nhật từ một commit CodeRepo đã kiểm tra:
+
+```bash
+python scripts/sync_benchmark_notebook.py --code-repo ../CodeRepo --revision <COMMIT_SHA>
+python scripts/check_benchmark_notebook.py --code-repo ../CodeRepo
+jupyter book build --html --execute
+```
+
+Script lưu commit và SHA-256 của nguồn trong metadata; build Book không fetch notebook từ một branch thay đổi liên tục. Final benchmark cần toàn bộ 20.000 ID; số liệu sample và CSV giả không được ghi là final. Corpus/checkpoint lưu trên Drive của tài khoản crawl chung để dùng cho M2, không commit vào Book.
+
+Trên Windows, nếu Node báo `fetch failed` khi kết nối Jupyter ở localhost, đặt `$env:NODE_OPTIONS = "--dns-result-order=ipv4first"` trong phiên PowerShell rồi build lại. Bản HTML tĩnh nằm tại `_build/html/index.html`; trang notebook nằm tại `_build/html/arxiv-nhom1-crawl-benchmark/index.html`.
+
 ## Quy tắc
 
 - **Notebook không chứa output.** nbstripout xoá output khi commit; CI build với `--execute`, nên mọi figure/table sinh lúc compile.
