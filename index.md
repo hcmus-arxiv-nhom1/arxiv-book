@@ -15,7 +15,7 @@ Project report for the course Introduction to Data Science (University of Scienc
 
 - **Code repository:** <https://github.com/hcmus-arxiv-nhom1/CodeRepo>
 - **This book (Moodle submission link):** <https://hcmus-arxiv-nhom1.github.io/arxiv-book/>
-- Colab benchmark notebook: `src/notebooks/colab_benchmark.ipynb` in the code repository
+- [Group crawl and benchmark notebook](m1/arxiv_nhom1_crawl_benchmark.ipynb): embedded source, pinned Colab launch and download
 
 ## Contents
 
@@ -25,11 +25,14 @@ Project report for the course Introduction to Data Science (University of Scienc
   - [Data statistics](m1/02-data-stats.ipynb)
   - [Performance](m1/03-performance.ipynb)
   - [Discussion](m1/04-discussion.md)
+  - [Colab crawl and benchmark](m1/arxiv_nhom1_crawl_benchmark.ipynb)
 - **Section 2 — Milestone 2: Hierarchical Parsing and Standardization**
   - [Overview](m2/index.md)
 
-Last updated: 2026-10-27.
+Last updated: 2026-10-30.
 
 ## Use of AI and external sources
 
 Part of the group's code and text was drafted with the help of an AI assistant (Claude, Anthropic) {cite}`anthropic-claude`; the files concerned carry a note at the top. Data was collected through the arXiv API {cite}`arxiv-api` and the Semantic Scholar API {cite}`s2-api`. Each chapter lists its full references.
+
+The unified Colab notebook, checkpoint orchestration and updated M1 documentation were drafted with assistance from OpenAI Codex; affected files disclose this assistance. Quantitative observations still require their recorded run evidence.

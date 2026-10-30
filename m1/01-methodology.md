@@ -1,98 +1,69 @@
 # Crawling methodology
 
-<!-- Owners: Đăng, Thiên. The crawler sections were written by Thiên with the help of an AI assistant (Claude, Anthropic), cited per the course rules. -->
+<!-- Owners: Đăng, Thiên. Updated with assistance from OpenAI Codex, disclosed per course rules. -->
 
-This chapter describes how the group built the Milestone 1 corpus: resolving the assigned arXiv IDs, downloading the LaTeX source of **every version**, keeping only `.tex` and `.bib` files, and collecting reference metadata from Semantic Scholar {cite}`hcmus-statement`. The code lives in the [code repository](https://github.com/hcmus-arxiv-nhom1/CodeRepo) (`src/crawler/`, `src/run_pipeline.py`); the data schema is fixed in `docs/data_contract.md` of that repository.
+Milestone 1 collects metadata, reference metadata and the available LaTeX source of **every version** of the assigned arXiv papers. Only `.tex` and `.bib` source files are retained; a version without usable TeX remains an explicit empty record {cite}`hcmus-statement`. Implementation lives in [CodeRepo](https://github.com/hcmus-arxiv-nhom1/CodeRepo); paths and schemas follow its `docs/data_contract.md`.
 
-## Scope
+## Scope and reproducibility
 
-The group is responsible for 20,000 arXiv IDs, split into four ranges of 5,000 IDs as given by the registration sheet:
+| Member | Inclusive assigned range | IDs |
+| --- | --- | ---: |
+| Cao Tiến Thiên | `2606.30734` → `2607.03693` | 5,000 |
+| Trần Minh Tiến | `2606.25734` → `2606.30733` | 5,000 |
+| Trương Lê Trung Hiếu | `2606.05734` → `2606.10733` | 5,000 |
+| Lý Huỳnh Minh Đăng | `2604.20535` → `2604.25534` | 5,000 |
 
-| Member | ID range |
-| --- | --- |
-| Cao Tiến Thiên | `2606.30734` → `2607.03693` |
-| Trần Minh Tiến | `2606.25734` → `2606.30733` |
-| Trương Lê Trung Hiếu | `2606.05734` → `2606.10733` |
-| Lý Huỳnh Minh Đăng | `2604.20535` → `2604.25534` |
+The final benchmark must cover **all 20,000 assigned IDs**. Samples validate the pipeline but do not replace that benchmark. Thiên's range crosses a month boundary: the generator uses the configured last June sequence (`2606.32040`) and restarts July at `00001`.
 
-arXiv sequence numbers restart at `00001` every month, so the range `2606.30734` → `2607.03693` is not one run of consecutive numbers. The crawler generates IDs **month by month** (`iter_id_range`) using the last sequence number of June, which was looked up with the arXiv API: `2606.32040` exists and `2606.32041` onwards do not. The range therefore holds exactly 1,307 + 3,693 = 5,000 IDs.
+The [group crawl and benchmark notebook](arxiv_nhom1_crawl_benchmark.ipynb) provides one entrypoint for both modes. It records the code revision, exact ID selection, parameters, dependency versions, hardware and sessions. Final mode rejects partial ranges and disabled references. A new run uses a new run ID; resume must match its saved configuration and implementation revision.
 
-## Pipeline
+## Discovery and source processing
 
-```{mermaid}
-flowchart LR
-    R["ID range"] --> G["Month-aware ID generation"]
-    G --> D["Discovery<br/>arXiv API id_list"]
-    D -->|metadata.json| C[("corpus/&lt;yymm-id&gt;/")]
-    D --> V["Version queue<br/>skip finished versions"]
-    V --> DL["Download /src/{id}vN"]
-    DL --> X["File type detection<br/>keep .tex, .bib"]
-    X -->|vN/| C
-    X -->|one line per version| J[("work/versions.jsonl")]
-    D -. separate thread .-> S["Semantic Scholar<br/>POST /paper/batch"]
-    S -->|references.json| C
-```
+1. **Generate and discover IDs.** Query the arXiv API with batches of up to 100 base IDs {cite}`arxiv-api`. The latest `vN` identifies the number of versions. `published` supplies the v1 date; versioned queries retrieve earlier versions' metadata. Cached valid metadata avoids another lookup.
+2. **Fallback without prolonged API retries.** Each API request has a two-attempt budget. A failed base-ID batch proceeds to OAI-PMH `arXivRaw`; missing entries or malformed feeds can receive a further API pass. OAI also supplies incomplete version dates. This reduces avoidable API backoff but cannot repair an unreachable network {cite}`arxiv-oai`.
+3. **Fetch every version.** Request `/src/{id}vN` separately, skipping only versions with a final journal status and existing output. Detect source type from content, not merely the filename {cite}`arxiv-mimetypes`.
+4. **Extract during transfer.** Read tar/tar.gz sequentially, member by member. Write only `.tex` and `.bib`; read past figures and other members. The normal tar path does not store the whole archive on disk. Unsafe paths and links are rejected. Kept source bytes are not edited: figure environments and `\includegraphics` commands remain for M2.
+5. **Handle other formats explicitly.** PDF/PS and recognized HTML submissions become empty records; detection can stop the body early. Unexpected plain HTML is a failed response. Single-file gzip/TeX can buffer its full contents in RAM. ZIP needs a temporary spool file and has a size limit. The implementation does **not** claim constant memory or zero temporary disk for every input format.
+6. **Collect references independently.** A separate thread requests Semantic Scholar batches of up to 100 and uses pagination when needed. All fetched references are retained, including references without an arXiv ID. Reference failures remain retryable and are checked separately from source completion {cite}`s2-api`.
 
-1. **Discovery** {cite}`arxiv-api`. The arXiv API is queried with `id_list`, 100 IDs per request, which is about 50 requests for 5,000 IDs. The answer gives the title, authors, `journal_ref` (venue), DOI and the **identifier of the latest version**: its `vN` suffix tells how many versions a paper has. `published` is the date of v1 and `updated` the date of the latest version. For papers with three or more versions, the dates of v2…v(N-1) come from versioned queries (`2606.30762v2`). OAI-PMH `arXivRaw` {cite}`arxiv-oai` is the fallback for IDs the API does not return.
-2. **Source download.** Every version is fetched on its own from `https://export.arxiv.org/src/{id}vN`, including papers that only have `v1`. The body is streamed to a `.part` file and renamed only once `Content-Length` matches.
-3. **File type detection by magic bytes**, never by file name {cite}`arxiv-mimetypes`:
+## Rate limiting and recovery
 
-   | First bytes | Kind | Handling |
-   | --- | --- | --- |
-   | `1f 8b` + tar header | `tar.gz` | Read member by member, write only `.tex` and `.bib` |
-   | `1f 8b`, TeX inside | single gzipped file | Written as one `.tex` file |
-   | `1f 8b`, HTML inside | `html.gz` | HTML submission (e.g. an EPTCS proceedings volume) → empty record |
-   | `%PDF`, `%!PS` | PDF / PostScript only | Empty record |
-   | plain HTML with HTTP 200 | Error page | `failed`, retried on the next run |
-   | HTTP 404/410 | Source no longer available | `unavailable`, empty record |
+One shared limiter within a crawler process governs API, OAI and source requests. Its lock covers the entire request body; starts are at least three seconds apart plus 0–0.1 seconds of jitter. The benchmark runner also separates successive child processes. Only one group crawler may operate at a time, including local tests {cite}`arxiv-tou`.
 
-4. **Figure removal by extraction**, as the statement requires: only `.tex` and `.bib` members are written, so figure binaries never enter the corpus. `.tex` files are kept byte for byte, so `figure` environments and `\includegraphics` commands remain for Milestone 2. Members with absolute paths, `..`, links or names the file system cannot store are skipped. For every version the crawler records the size before and after filtering and the extensions it dropped (`dropped`) in `work/versions.jsonl`.
-5. **Reference metadata** {cite}`s2-api`. A separate thread calls Semantic Scholar's `POST /paper/batch` with 100 papers per request. The answer contains the **complete** reference list of each paper, so 20,000 papers need only about 200 requests. Every reference is kept, with or without an arXiv ID. A paper whose list is too long is completed through the paginated `/paper/{id}/references` endpoint.
+- **HTTP 429, 5xx and connection failures:** bounded retries with backoff and `Retry-After`; no idle backoff after the final unsuccessful attempt. Discovery has a smaller API budget because it has an OAI fallback.
+- **Body interrupted during transfer:** request remaining bytes with HTTP Range and verify `Content-Range`. If the server ignores or misreports the range, restart the body. A cut body differs from a rate-limit response; rejected Range requests still respect retry rules.
+- **Repeated HTTP 403:** circuit-breaker pauses and slower pacing; persistent blocking stops the run for inspection.
+- **Pipeline interruption:** append and flush per-version records, retry failed work on resume, retain empty versions. A work-directory OS lock prevents two local pipeline processes sharing bookkeeping.
 
-## Politeness
+Range recovery is **within a live download process**. A destroyed runtime does not preserve the connection or guarantee byte-level continuation of that version.
 
-arXiv's Terms of Use ask for *"no more than 1 request every 3 seconds"* and a single connection at a time, counted over all machines of the group {cite}`arxiv-tou`.
+## Drive persistence and M2 handoff
 
-- **One shared `RateLimiter`** serves every arXiv request (API, OAI-PMH, `/src/`). Its lock is held for the whole request, so two arXiv requests never overlap. Request starts are at least 3 s apart plus a random jitter of 0–0.1 s. `run.log` records the `gap` of every request so the pace can be audited; a test run on 27/10/2026 measured a minimum gap of 3.015 s.
-- Requests go only to the mirrors `export.arxiv.org` and `oaipmh.arxiv.org`, never to `arxiv.org`, with a descriptive User-Agent.
-- **One run per work directory:** `run_pipeline` holds an operating-system lock on `work/run.lock`. The corpus is collected by **one** instance, in shifts shared by the members, never on two machines at once.
-- **Retries:** connection errors, timeouts, bodies cut mid-transfer, 429 and 5xx are retried up to 5 times with a `2^n` s backoff plus jitter, honouring `Retry-After`. Three consecutive 403 answers pause the crawl for 15–30 minutes and slow the pace to 5 s; more than three such pauses stop the run so it can be resumed later.
-- **Semantic Scholar has its own limiter:** 1.1 s per request with an API key, 3 s without one, matching the limit of 100 requests per 5 minutes.
+The group operates a designated Google crawl account in shifts at `/content/drive/MyDrive/arxiv-nhom1`. The notebook validates a pre-existing team marker and write access. It never silently creates a substitute folder or deletes an existing run.
 
-## Output layout
+Process corpus on the Colab local disk. Request checkpoints approximately every 300 seconds at a completed-version boundary and at chunk boundaries. Archive new/changed completed data and matching journals; read back each uploaded delta and verify SHA-256 before publishing its completion record. Ignore incomplete uploads and validate a chain of generations during restore.
 
-```text
-data/corpus/
-  2606-30734/                # arXiv ID as yymm-id
-    metadata.json            # arxiv_id, title, authors[], submission_date, revised_dates[], venue, num_versions
-    references.json          # every reference returned by S2: title, authors, date, arXiv ID (if any), S2 ID
-    v1/                      # .tex/.bib only; empty when the version has no TeX source
-    v2/
-work/
-  versions.jsonl             # one line per version: status, kind, sizes, dropped files, timings
-  discovery.jsonl  failed.csv  run_summary.json  run.log  profile/
-```
+Five minutes is a **target, not a maximum loss guarantee**: a large version or failed sync can delay saving. A hard kill cannot execute cleanup. Only verified Drive checkpoints survive; uncommitted work may need to run again. Heartbeats help coordinate shifts, but Drive markers are advisory rather than an atomic distributed lock.
 
-`metadata.json` holds every column of the `papers` table; the references of `references.json` that carry an arXiv ID become the `references` table of Milestone 3.
+A four-hour session budget is checked between chunks for an orderly handoff; it does not guarantee that Colab keeps the runtime alive that long. Resume uses the same run ID and saved code revision in a fresh local destination. M2 restores and validates that corpus, keeping original `.tex`/`.bib` immutable and writing parsed outputs elsewhere.
 
-## Resume
+## Measurement boundaries
 
-Every finished version is appended to `work/versions.jsonl` at once (flushed and fsynced), so even a hard kill loses no finished line. Running the **same command** again skips versions already in a final state and retries `failed` ones; existing `metadata.json` and `references.json` files are skipped too. In a test, the crawl was killed after 16 versions and restarted: all 16 were skipped and no line was written twice.
+Each chunk runs under `/usr/bin/time -v` and `src.utils.profiler`. The profiler samples resident memory of the crawler and its descendants every second and data/work directory size periodically. Its own process memory is excluded from process-tree RSS; `/usr/bin/time` wraps the profiler and has a different scope.
 
-## Benchmark protocol
+- Pipeline wall time includes discovery, source processing, reference-thread completion, retry waits and periodic checkpoints.
+- Post-chunk/final sync is reported separately where outside the chunk profiler. Setup, installation, report export and offline gaps are outside pipeline time.
+- `retry_backoff_wait` is a log-derived diagnostic already included in runtime; do not add it again or subtract it.
+- Mean time per requested ID divides by requested IDs, including unsuccessful IDs. It is not mean time per version; read it with coverage and QA.
+- Peaks are **observed sampled peaks**; short spikes may be missed. Average RAM across complete profiles is duration-weighted; wall times sum and observed peaks take the maximum.
+- Retain all attempts. If a hard kill leaves a profile without its summary, flag timing as incomplete rather than treating missing runtime as zero. Corpus completeness alone does not prove complete timing.
 
-The statement measures the running time over *"each of the required papers"*, with *"no upper limit on the running time"*, on *"a Google Colab instance running on CPU-only mode"*. The group therefore benchmarks the **official crawl of all 20,000 IDs itself** rather than a sample. Each chunk of 500 IDs runs on Colab CPU-only under `/usr/bin/time -v` and the group's profiler (`src/utils/profiler.py`), which samples every second the resident memory of the crawler **and all its child processes** and walks the size of `data/` and `work/`. The [Performance](03-performance.ipynb) chapter aggregates the chunks: wall time is the sum over chunks, peak RAM and peak disk are the maxima, and average RAM is weighted by duration.
+## Success and evidence
 
-## Definition of success
+A source paper is complete when all discovered versions have final status `ok`, `no_tex` or `unavailable`, with required directories and valid metadata. Empty records count as required output, not successful TeX downloads. Report source QA and reference QA separately.
 
-- **A paper is crawled successfully** when it exists on arXiv and **every version** reached a final status `ok`, `no_tex` or `unavailable` with its `vN/` folder. A version without TeX counts as done, because the statement asks to keep an empty record instead of dropping the paper. This matches `papers_complete` in `run_summary.json` and the test `n_versions_ok == n_versions` in the statistics notebook.
-- **The success rate of reference metadata** is the share of papers Semantic Scholar knows (`status = ok`). The notebook also reports the share of references whose metadata S2 could resolve (`s2_id` not null).
+`coverage.json` covers the whole selection. `final_corpus_complete` requires all 20,000 IDs and required data; `final_complete` additionally requires intact timing summaries. The evidence ZIP contains manifests, dependency/hardware details, coverage/QA, version/discovery journals, logs, attempt profiles and Book CSVs. Raw corpus and Secrets are excluded.
 
-## Observations from the test runs (4 × 200 IDs, 19–20/10/2026, laptop)
-
-These are not the official benchmark, which runs on Google Colab (CPU-only).
-
-- After one resume, all four ranges reached 200/200 complete papers. 57 of 1,061 versions (5.4 %) have no TeX source: PDF or HTML only, or a 404 from arXiv.
-- The most frequent errors were connections closed by arXiv in the middle of large downloads and HTTP 429 at peak hours; retries and resume handled both.
-- Extraction takes 19 ms at the median (66 ms at p90), negligible next to the 3 s pace. The group therefore did not move extraction to a separate process; the part worth running in parallel is Semantic Scholar.
-- Semantic Scholar: the 800 test papers needed 21 batch requests; they have 35.6 references on average, 49.9 % of which carry an arXiv ID.
+:::{important}
+Full-crawl measurements have not yet been supplied. Analysis CSVs remain placeholders. Observations from a 100-ID Dang sample are exploratory and need their run evidence before numerical claims are published as measured results.
+:::
