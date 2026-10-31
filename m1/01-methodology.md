@@ -49,14 +49,14 @@ A four-hour session budget is checked between chunks for an orderly handoff; it 
 
 ## Measurement boundaries
 
-Each chunk runs under `/usr/bin/time -v` and `src.utils.profiler`. The profiler samples resident memory of the crawler and its descendants every second and data/work directory size periodically. Its own process memory is excluded from process-tree RSS; `/usr/bin/time` wraps the profiler and has a different scope.
+The primary measurements span a session from before restore through final corpus sync and shift release. A sampler measures the runner/notebook kernel (including its baseline) and all descendants every second, with local data/work and telemetry staging disk sampled every 30 seconds. Each chunk also runs under `/usr/bin/time -v` and `src.utils.profiler`; these narrower measurements remain diagnostic cross-checks.
 
-- Pipeline wall time includes discovery, source processing, reference-thread completion, retry waits and periodic checkpoints.
-- Post-chunk/final sync is reported separately where outside the chunk profiler. Setup, installation, report export and offline gaps are outside pipeline time.
+- Session wall includes restore, orchestration, discovery, source processing, reference completion, retry waits, checkpoints, QA and final corpus sync. Setup/installation, final telemetry publication/collection, final evidence re-export/download and offline gaps are excluded. Earlier report generation inside the runner is included.
+- `pipeline_wall_time` retains the chunk-only sum; `wall_time_e2e` uses full-session measurements. Never add checkpoints or overlapping reference durations again.
 - `retry_backoff_wait` is a log-derived diagnostic already included in runtime; do not add it again or subtract it.
-- Mean time per requested ID divides by requested IDs, including unsuccessful IDs. It is not mean time per version; read it with coverage and QA.
-- Peaks are **observed sampled peaks**; short spikes may be missed. Average RAM across complete profiles is duration-weighted; wall times sum and observed peaks take the maximum.
-- Retain all attempts. If a hard kill leaves a profile without its summary, flag timing as incomplete rather than treating missing runtime as zero. Corpus completeness alone does not prove complete timing.
+- Mean time per requested ID divides session wall by required IDs, including unsuccessful IDs. `paper_attempt_timings.csv` separately records each paper's admission-to-source/reference-readiness latency and source work, retaining retries. Batch waiting makes lifecycle latencies overlap; they must not be summed.
+- Peaks are **observed sampled peaks**; short spikes may be missed. RSS observations are integrated over time and sessions combined by sampled duration. Output size is the actual final corpus size, not summed chunk output.
+- Independent, checksummed Drive telemetry targets publication every 30 seconds, separately from corpus checkpoints, and is restored even when newer than the corpus chain. Failed/stalled uploads can exceed this target. An unfinalized/corrupt session exports only an observed lower bound; exact end-to-end and mean-time rows are omitted. Missing chunk summaries also flag incomplete timing. Corpus completeness alone does not prove complete timing.
 
 ## Success and evidence
 
@@ -65,5 +65,5 @@ A source paper is complete when all discovered versions have final status `ok`, 
 `coverage.json` covers the whole selection. `final_corpus_complete` requires all 20,000 IDs and required data; `final_complete` additionally requires intact timing summaries. The evidence ZIP contains manifests, dependency/hardware details, coverage/QA, version/discovery journals, logs, attempt profiles and Book CSVs. Raw corpus and Secrets are excluded.
 
 :::{important}
-Full-crawl measurements have not yet been supplied. Analysis CSVs remain placeholders. Observations from a 100-ID Dang sample are exploratory and need their run evidence before numerical claims are published as measured results.
+Full-crawl measurements have not yet been supplied. Analysis CSVs remain placeholders. The supplied 200-ID Dang smoke has been audited separately, with its legacy implementation and measurement scope retained; it does not replace a full-corpus benchmark using the new measurement contract.
 :::

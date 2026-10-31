@@ -6,7 +6,7 @@
 
 The implementation includes shared request pacing, streaming tar extraction, filtered storage, retries, Range recovery and version-level resume. Automated tests exercise these behaviors with simulated responses. They establish covered software behavior, not full-crawl performance on arXiv.
 
-The group has run exploratory Colab samples, including the first 100 IDs of Đăng's range (`2604.20535`–`2604.20634`). Reported observations of roughly 3.6 seconds per paper and a 135 MB source in about 20 seconds have not yet been matched to an evidence archive in this report. They are not final benchmark results and are not extrapolated to the whole corpus.
+The audited 200-ID Đăng sample (`2604.20535`–`2604.20734`, implementation `6c8c2b3`) completed 279 version records: 266 with TeX, 12 without TeX and one unavailable. Its two chunk profiles totaled 1,805.18 seconds; this is a legacy chunk-only scope, not the new full-session measurement. The supplied evidence also revealed overlapping component timers, so download/transfer component means from that revision are not used. These observations do not establish full-corpus performance; committed analysis CSVs remain placeholders pending the final run.
 
 ## Why the selected optimizations matter
 
