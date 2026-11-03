@@ -1,0 +1,89 @@
+{
+  "scope": "Historical smoke evidence, not final benchmark or controlled A/B tests",
+  "inputs": [
+    {
+      "path": "bench_results_old/work/manifest.json",
+      "sha256": "ed414d1d8071b1f837306f08723601beab4de4abbaae95770e98446c44404731"
+    },
+    {
+      "path": "bench_results_old/work/coverage.json",
+      "sha256": "e9f3aa9757c8803f9962b0f2cbfdc15b3bc76dad0b5670ff2d84f013e443b412"
+    },
+    {
+      "path": "bench_results_old/book_csv/benchmark_summary.csv",
+      "sha256": "3bae82bcab433d0b391148d84295af2c090b539c44f34e11971edbe22a7b1aea"
+    },
+    {
+      "path": "bench_results_new/work/manifest.json",
+      "sha256": "d561efdbd04ada8317ff4fb4b951f2dbaf2e564bd50126ce18d1e60d220f652a"
+    },
+    {
+      "path": "bench_results_new/work/coverage.json",
+      "sha256": "07d11f508b754ff635b5feb35a67d1882cecfe1924aa58af7161636b65e1d46f"
+    },
+    {
+      "path": "bench_results_new/book_csv/benchmark_summary.csv",
+      "sha256": "c08ec75b0a0102bf996b94e72bb6631bb999d50402821d9d5702c244be998ca5"
+    },
+    {
+      "path": "bench_results_newhf/work/manifest.json",
+      "sha256": "b3452e60ec7a5cea63c95714d7e6f204ef0d76d599d25227fde024b63c366404"
+    },
+    {
+      "path": "bench_results_newhf/work/coverage.json",
+      "sha256": "3eea77e361cc501c8d4e7e490ec4f762bd9d4e21a31141d1cc59501395a24fd2"
+    },
+    {
+      "path": "bench_results_newhf/book_csv/benchmark_summary.csv",
+      "sha256": "3938227baefb462250a5dc848182aa08c872c6678145ee56e1fc32bb1d0688d3"
+    },
+    {
+      "path": "bench_results_1000/work/manifest.json",
+      "sha256": "19e40d8c6de6b73889a545c6d7dda78df362a87d4ea03739a378624f001d975a"
+    },
+    {
+      "path": "bench_results_1000/work/coverage.json",
+      "sha256": "14df9dde1ba86b9b276f70176b31223282b7b7cad3a6b09e3a28e63dd21d04ba"
+    },
+    {
+      "path": "bench_results_1000/book_csv/benchmark_summary.csv",
+      "sha256": "203857adc64ec094caec49bba520e47a54cd64379b006cc422ddc0128bd3a6fb"
+    },
+    {
+      "path": "bench_results_500999_new/work/manifest.json",
+      "sha256": "1cb1e281f8722d1dd3dcc8bc7101d68bbc109552dbeb71a5bebb60cdad21d763"
+    },
+    {
+      "path": "bench_results_500999_new/work/coverage.json",
+      "sha256": "15615560f84164e2659845641c65c85d62c2d372ce81dfd9b36dee89be3c01e9"
+    },
+    {
+      "path": "bench_results_500999_new/book_csv/benchmark_summary.csv",
+      "sha256": "393c5f5b10a00602c3bbdf77574435e05c10f33682c3781d53446b3570d28897"
+    },
+    {
+      "path": "bench_results_hybrid_dang1000/work/manifest.json",
+      "sha256": "b05156e026005ecf51861af81ef6155cd4cb634f5108873fd6cca00f6bb5a4c9"
+    },
+    {
+      "path": "bench_results_hybrid_dang1000/work/coverage.json",
+      "sha256": "ee727270d8daa83afc632edadd505cdcbd26eeeb19d146e2a56cd1d1a2eb5c7c"
+    },
+    {
+      "path": "bench_results_hybrid_dang1000/book_csv/benchmark_summary.csv",
+      "sha256": "6fe55ff4f06bbf90e5020b1859b3349817aedf0a166396e08416dbbb182d7df4"
+    },
+    {
+      "path": "bench_results_10001999/work/manifest.json",
+      "sha256": "a7903d8bae7bc52b0e17fed0063f5d6308a1ce1320dba4ecd79d72b431768154"
+    },
+    {
+      "path": "bench_results_10001999/work/coverage.json",
+      "sha256": "d4ea586f1359a93f123c17af52c87d2a346381de89a080657512f6fd57c3bad9"
+    },
+    {
+      "path": "bench_results_10001999/book_csv/benchmark_summary.csv",
+      "sha256": "7397162d9a66827974432883762cc893d1a2174609aa0b4cbb92475d1a4ce63e"
+    }
+  ]
+}
