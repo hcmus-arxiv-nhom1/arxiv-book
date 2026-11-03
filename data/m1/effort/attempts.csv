@@ -1,0 +1,8 @@
+experiment,evidence,run_id,revision,offset,required,complete,coverage_complete,timing_complete,wall_s,scope,discovery_s,retry_backoff_s,s3_inferred
+API/OAI + Drive (200 IDs),bench_results_old,m1-smoke-dang-200-01,6c8c2b3632fab36513a9509a836891f856495411,0,200,200,True,True,1805.18,legacy chunk wall,7.6,318.8,0
+Snapshot + Drive (100 IDs),bench_results_new,m1-snapshot-20261101,69d8382ad4704a7d72df8337de2009d9ce946c17,0,100,100,True,True,635.3592481139995,session wall,27.6,0.0,0
+Snapshot + HF (100 IDs),bench_results_newhf,m1-hf-smoke-dang-100-01,8636ba0915ddd7938739d31d90234a54857fab2a,0,100,100,True,True,502.1032576719999,session wall,54.0,0.0,0
+Snapshot + Drive (incomplete 1000-ID run),bench_results_1000,m1-dang-1000-01,0bbc735cec7b316337cc3125080c62a78db3f6dc,0,1000,399,False,False,3252.163961792,observed session; timing audit incomplete,2.8,282.3,0
+"Snapshot + Drive (500 IDs, offsets 500-999)",bench_results_500999_new,m1-test-throttle-500-999-progress-02,8cff4cf96bdbcf2fa2af68fb85363d3c4c0e3bb5,500,500,500,True,True,3954.6464530010003,session wall,10.4,0.0,0
+"Hybrid + Drive (1000 IDs, offsets 0-999)",bench_results_hybrid_dang1000,m1-hybrid-dang-0000-0999-sample-01,8480271e8dde2a2a6bb3e99f85cc7cc749e1cfb4,0,1000,1000,True,True,4453.8701837730005,session wall,10.5,470.1,700
+"Hybrid + Drive (1000 IDs, offsets 1000-1999)",bench_results_10001999,dang-1000-1999,3dbce2207655735c624e7e76640c28b0fd13ffd8,1000,1000,1000,True,True,3517.458156798,session wall,9.4,0.0,704
