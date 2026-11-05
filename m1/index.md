@@ -4,9 +4,9 @@ Milestone 1 collects the LaTeX sources (keeping only `.tex` and `.bib` files) of
 
 Chapters:
 
-1. [Methodology](01-methodology.md): how the crawler works, tools, politeness, output layout, definition of success.
+1. [Methodology](01-methodology.md): how the crawler works, snapshot-first discovery, the optional S3 hybrid source, politeness and throttling, checkpoints, output layout, definition of success.
 2. [Data statistics](02-data-stats.ipynb): success rate, size before and after removing figures, references.
-3. [Performance](03-performance.ipynb): running time, RAM and disk on Google Colab (CPU-only).
+3. [Performance](03-performance.ipynb): running time, RAM and disk on Google Colab (CPU-only), and the arXiv request timeline when it has been exported.
 4. [Discussion](04-discussion.md): results, limitations, possible improvements.
 5. [Attempts and effort](05-attempts-effort.ipynb): audited historical experiments, failed attempts and lessons; real sample evidence, separate from final statistics.
 6. [Group crawl and benchmark notebook](arxiv_nhom1_crawl_benchmark.ipynb): inspect the operational notebook, download it or open the pinned version in Colab. It is not executed during Book builds.
@@ -14,5 +14,5 @@ Chapters:
 ```{note}
 The main data-statistics and performance pages currently use **placeholder CSV files** (`scripts/make_fake_data.py`) so that the book builds. They will be replaced by the CSV files exported from the code repository once the crawl and the benchmark are done.
 
-The final benchmark covers all 20,000 assigned IDs and their discovered versions on Colab CPU. Sample measurements validate the pipeline only. Source/reference QA, checkpoint provenance and complete timing evidence accompany the final CSVs.
+The final benchmark covers all 20,000 assigned IDs and their discovered versions on Colab CPU. The crawl runs as independent partition runs (an only-v1 run and one multi-version run per member) whose evidence is combined and audited before any figure here is called final. Sample measurements validate the pipeline only. Source/reference QA, checkpoint provenance and complete timing evidence accompany the final CSVs.
 ```
