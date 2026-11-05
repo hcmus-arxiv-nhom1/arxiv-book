@@ -1,0 +1,9 @@
+metric,value,unit,tool
+wall_time_e2e,11.25,s,perf_counter
+time_per_paper,0.1125,s,wall / papers
+ram_max,197.1,MB,psutil RSS of the process tree
+ram_mean,143.3,MB,"psutil RSS, mean"
+disk_max,3.3,MB,du
+output_size,3.28,MB,du of the Parquet shards
+papers,100,papers,m2_papers.csv
+versions,130,versions,m2_versions.csv
