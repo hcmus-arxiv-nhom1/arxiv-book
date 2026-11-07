@@ -18,4 +18,5 @@ jobs:
       - run: pip install -r requirements.txt
       - run: python scripts/check_benchmark_notebook.py
       - run: python scripts/test_benchmark_mirror.py
+      - run: python scripts/test_split_notebook_mirrors.py
       - run: jupyter book build --html --execute

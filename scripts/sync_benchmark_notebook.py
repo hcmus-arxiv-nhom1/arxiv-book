@@ -15,7 +15,7 @@ SOURCE = "src/notebooks/arxiv_nhom1_crawl_benchmark.ipynb"
 TARGET = Path(__file__).resolve().parents[1] / "m1/arxiv_nhom1_crawl_benchmark.ipynb"
 
 
-def sync(repo: Path, revision: str) -> None:
+def sync(repo: Path, revision: str, *, repository: str = "hcmus-arxiv-nhom1/CodeRepo") -> None:
     sha = subprocess.check_output(
         ["git", "-C", str(repo), "rev-parse", revision], text=True
     ).strip()
@@ -24,19 +24,19 @@ def sync(repo: Path, revision: str) -> None:
     metadata = notebook.setdefault("metadata", {})
     metadata["tags"] = sorted(set(metadata.get("tags", [])) | {"skip-execution"})
     metadata["benchmark_source"] = dict(
-        repository="hcmus-arxiv-nhom1/CodeRepo",
+        repository=repository,
         revision=sha,
         path=SOURCE,
         sha256=hashlib.sha256(raw).hexdigest(),
         cells_sha256=cells_digest(notebook),
     )
-    url = f"https://github.com/hcmus-arxiv-nhom1/CodeRepo/blob/{sha}/{SOURCE}"
-    colab = f"https://colab.research.google.com/github/hcmus-arxiv-nhom1/CodeRepo/blob/{sha}/{SOURCE}"
+    url = f"https://github.com/{repository}/blob/{sha}/{SOURCE}"
+    colab = f"https://colab.research.google.com/github/{repository}/blob/{sha}/{SOURCE}"
     intro = (
         ":::{note}\nThis is a generated, nonexecuting mirror of the operational notebook. "
-        "The Book build never crawls arXiv or mounts Drive. Final measurements are pending.\n\n"
+        "The Book build never crawls arXiv or mounts Drive.\n\n"
         f"[Open this version in Colab]({colab}) · [Canonical source]({url}) · "
-        "Download notebook: {download}`./arxiv_nhom1_crawl_benchmark.ipynb`\n\n"
+        f"Download notebook: {{download}}`./{TARGET.name}`\n\n"
         f"CodeRepo notebook revision: `{sha}`. The setup cell separately pins the "
         "implementation revision used by the crawler.\n:::"
     )
@@ -64,5 +64,6 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--code-repo", type=Path, required=True)
     parser.add_argument("--revision", required=True)
+    parser.add_argument("--repository", default="hcmus-arxiv-nhom1/CodeRepo", help="GitHub owner/repository containing revision")
     args = parser.parse_args()
-    sync(args.code_repo, args.revision)
+    sync(args.code_repo, args.revision, repository=args.repository)
