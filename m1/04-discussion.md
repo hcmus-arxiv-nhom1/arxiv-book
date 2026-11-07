@@ -1,30 +1,31 @@
-# Discussion and limitations
+# 5. Discussion and limitations
 
 <!-- Drafted with assistance from OpenAI Codex, disclosed per course rules. -->
 
-## What is established
+## 5.1. Results and interpretation
 
-The implementation includes shared request pacing, streaming tar extraction, filtered storage, retries, Range recovery and version-level resume. Automated tests exercise these behaviors with simulated responses. They establish covered software behavior, not full-crawl performance on arXiv.
+The collection is divided into one only-v1 run and four member-specific multi-version runs. The scope is defined by the assigned IDs and the metadata snapshot described in [Problem and Dataset](00-problem-dataset.md). Completion of a crawl or a checkpoint must be distinguished from the availability of usable TeX and complete reference metadata; `no_tex`, `unavailable`, failures and reference statuses require separate reporting.
 
-The audited 200-ID Đăng sample (`2604.20535`–`2604.20734`, implementation `6c8c2b3`) completed 279 version records: 266 with TeX, 12 without TeX and one unavailable. Its two chunk profiles totaled 1,805.18 seconds; this is a legacy chunk-only scope, not the new full-session measurement. The supplied evidence also revealed overlapping component timers, so download/transfer component means from that revision are not used. These observations do not establish full-corpus performance; committed analysis CSVs remain placeholders pending the final run.
+The five manifests and exported paper records reconcile with all 20,000 assigned IDs, and the journals record a terminal state for all 26,491 snapshot versions. Of these records, 25,041 are `ok`, 1,364 are `no_tex` and 86 are `unavailable`. A total of 18,878 papers have at least one version with TeX. The [Data statistics](02-data-stats.ipynb) page reports reference-list and citation-level outcomes separately; 17 paper reference lists were recorded as `not_found`. These are exporter and journal results, not an independent audit of every corpus file.
 
-## Why the selected optimizations matter
+## 5.2. Design trade-offs
 
-Batch discovery reduces metadata requests when the API responds successfully. A bounded API retry budget avoids repeated backoff before trying OAI. Stream extraction avoids storing normal tar archives; filtering avoids retaining figure binaries. Range recovery avoids restarting long live transfers when supported. Reference collection overlaps the arXiv lane using its own limiter.
+The filtered metadata snapshot reduces base discovery requests and fixes a reproducible target scope, but revisions after its cutoff are outside that scope. S3 bulk supplies source candidates for papers with only `v1` in the snapshot; the version assignment is conditional on the assumptions explained in [Methodology](01-methodology.md), not independent proof of every member's version. Multi-version papers use version-specific arXiv requests to retain their history.
 
-Larger chunks amortize process startup and bookkeeping but delay chunk-boundary persistence. Periodic completed-version checkpoints add another persistence opportunity, at a real compression/Drive/verification cost. More download workers cannot be assumed to improve throughput while maintaining the group's single arXiv lane.
+Streaming tar extraction and retaining only `.tex`/`.bib` reduce retained material, while retry, backoff and HTTP Range recovery address network interruptions. These choices do not guarantee constant memory for every source format, remove all network errors, or establish a particular speedup by themselves. [Attempts and effort](05-attempts-effort.ipynb) documents the experiments and their evidence and limitations.
 
-## Remaining limits
+Drive checkpoints preserve published progress across runtime interruptions, with storage, synchronization and restore costs. A checkpoint target is not a strict guarantee of when data becomes durable; work after the latest published state can be lost. Multiple runtimes were used concurrently with distinct run directories and shared Drive access. Per-process request pacing does not provide a global limiter across machines.
 
-- Network latency, large sources, retries and availability can dominate runtime. CPU-only does not imply CPU-bound.
-- OAI can recover version history without necessarily supplying all per-version titles/authors. The contract permits unavailable per-version fields; fallback is not equivalent to successful versioned API metadata.
-- ZIP spooling and single-file buffering differ from tar streaming. No universal constant-RAM or zero-temporary-disk guarantee is made.
-- Checkpoints are durable only after verification. Runtime death can lose uncommitted progress. Restore reads checkpoint archives and may take substantial time/disk.
-- Drive shift markers are advisory: coordinate one active crawler. Record hardware for each resumed session.
-- Sample throughput and sampled peaks do not establish final performance. Missing interrupted summaries make exact timing incomplete even when corpus recovery succeeds.
+The [Performance](03-performance.ipynb) page presents validated sampler intervals on a shared timeline. Its group interval includes gaps between runs and excludes work outside the sampler, including earlier bulk preparation; it is not obtained by adding overlapping session times. Network behavior and different code revisions limit causal comparisons across runs.
 
-## Completing the final report
+## 5.3. Remaining limits and M2 handoff
 
-Benchmark all 20,000 assigned IDs and all discovered versions. Before replacing placeholder CSVs, verify full source/reference QA, record the exact CodeRepo revision, retain attempts/timing audits and disclose session boundaries and exclusions. Do not describe multiple sessions as one uninterrupted runtime.
+- Network availability, rate limiting and source size can affect runtime independently of CPU capacity. Sampled RAM and disk peaks may miss short spikes.
+- PDF/PS and other submissions without usable TeX can produce `no_tex`; unavailable versions are tracked separately. A terminal status does not guarantee a parseable source file.
+- Reference collection is independent of S3 source extraction. A missing or unsuccessful reference record is not evidence that a paper has zero references.
+- Some historical version metadata can remain incomplete. The snapshot may not include subsequent revisions, and its exact cutoff relative to every S3 bundle is not established.
+- M2 should use the raw paper/version corpus together with metadata, reference records, snapshot scope and source/QA journals, and validate accessible files before parsing. The current journal reconciliation is not a full readback audit of the corpus.
 
-The [operational notebook](arxiv_nhom1_crawl_benchmark.ipynb) is embedded for inspection and launch in Colab. Book builds execute CSV analysis notebooks, never the crawler. The submitted Book retains one M1 chapter group and one M2 chapter group.
+:::{note}
+**Pending handoff audit:** validate raw corpus accessibility and source/reference QA, review the `no_tex` and `unavailable` cases, and reconcile the original timing-audit flags with the recovered session telemetry before using the corpus for M2.
+:::

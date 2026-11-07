@@ -11,6 +11,8 @@ Project report for the course Introduction to Data Science (University of Scienc
 | Trương Lê Trung Hiếu | 24127169 | [@Hiulaptop](https://github.com/Hiulaptop) | Infrastructure, benchmark and book |
 | Lý Huỳnh Minh Đăng | 24127272 | [@DankDaPancake](https://github.com/DankDaPancake) | Methodology, modeling and submission |
 
+*Table: Group members, student IDs, GitHub accounts and project roles.*
+
 ## Links
 
 - **Code repository:** <https://github.com/hcmus-arxiv-nhom1/CodeRepo>

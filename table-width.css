@@ -1,0 +1,24 @@
+/* Let short content and notebook tables use the available article width. */
+article table, main table {
+  width: 100%;
+  min-width: 100%;
+  margin-block: 1.5rem;
+}
+
+article .table-caption, main .table-caption {
+  margin: 0.5rem 0 2.5rem;
+  font-size: 0.9em;
+  font-style: italic;
+}
+
+/* Scroll wide notebook tables without wrapping each cell. */
+.table-scroll {
+  max-width: 100%;
+  overflow-x: auto;
+}
+
+article .table-scroll table, main .table-scroll table {
+  width: max-content;
+  min-width: 100%;
+  white-space: nowrap;
+}

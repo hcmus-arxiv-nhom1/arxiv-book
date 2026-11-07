@@ -1,0 +1,16 @@
+run,status,versions
+only-v1-all,no_tex,958
+only-v1-all,ok,13955
+only-v1-all,unavailable,0
+multi-dang,no_tex,144
+multi-dang,ok,3217
+multi-dang,unavailable,28
+multi-hieu,no_tex,101
+multi-hieu,ok,2937
+multi-hieu,unavailable,22
+multi-thien,no_tex,79
+multi-thien,ok,2411
+multi-thien,unavailable,20
+multi-tien,no_tex,82
+multi-tien,ok,2521
+multi-tien,unavailable,16
