@@ -27,6 +27,8 @@ The implemented `infer_v1` heuristic checks that the snapshot has one version an
 
 The crawler detects source format from content and reads tar/tar.gz members sequentially. It retains `.tex` and `.bib` files, reading past figures and other discarded members, and rejects unsafe paths and links. The retained TeX is not rewritten: figure commands remain for later processing. PDF/PS and other recognized non-TeX sources can result in an explicit `no_tex` record; unexpected or failed downloads remain subject to the crawler's error handling. Single-file gzip and ZIP inputs have different memory and temporary-disk behavior from streaming tar inputs {cite}`arxiv-mimetypes`.
 
+The reported M1 runs predate the subsequent `.bbl` collection work. For M2, the group is adding a conditional `.bbl` fallback to recover reference information where no `.bib` or `\bibitem` is available, following the course Q&A {cite}`hcmus-qa`. This later work is not included in the M1 crawl statistics reported here.
+
 Snapshot metadata supplies the base records. Where the discovery implementation needs missing information or encounters incomplete records, it can use the arXiv API and OAI-PMH `arXivRaw` fallback; unavailable historical fields may remain null {cite}`arxiv-api` {cite}`arxiv-oai`. Reference metadata is fetched separately, including references without an arXiv ID. Reference completion and source completion are evaluated independently.
 
 ## 2.3 Rate limiting and recovery

@@ -27,6 +27,10 @@ project:
     - title: "Milestone 2 — Hierarchical Parsing and Standardization"
       children:
         - file: m2/index.md
+        - file: m2/01-methodology.md
+        - file: m2/02-data-stats.ipynb
+        - file: m2/03-performance.ipynb
+        - file: m2/04-quality.ipynb
 site:
   template: book-theme
   options:

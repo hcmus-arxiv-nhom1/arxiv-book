@@ -1,0 +1,6 @@
+category,papers_found_on_first_reading,papers_in_final_output,status,example
+Journal-template front matter read as sentences,15,5,"fixed for \preprint \affil \authornote \subjclass \footnotetext \copyrightclause \markboth \begingroup; remaining: ICML \twocolumn[ blocks, brace-wrapped author blocks, \hlb/\todo notes, \WriteBookmarks","\affil[1]{Department of Statistics ...} (2606.25749)"
+Drop cap joined wrongly,1,0,fixed (\IEEEPARstart),"address randomization has been widely adopted (2606.25788)"
+Heading with \texorpdfstring and nested braces left raw,1,0,fixed,"Sensitivity of MST to \texorpdfstring{$T_{max}$}{Tmax} (2606.25747)"
+Sentence that starts with an unexpanded author macro,3,3,open: macros are not expanded,"\toolname achieves strong proactive defense (2606.25734)"
+Text around a block formula kept as a short sentence,,,by design: the formula is a leaf of its own,"Therefore, (2606.25803)"
