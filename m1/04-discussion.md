@@ -27,5 +27,5 @@ The [Performance](03-performance.ipynb) page presents validated sampler interval
 - M2 should use the raw paper/version corpus together with metadata, reference records, snapshot scope and source/QA journals, and validate accessible files before parsing. The current journal reconciliation is not a full readback audit of the corpus.
 
 :::{note}
-**Pending handoff audit:** validate raw corpus accessibility and source/reference QA, review the `no_tex` and `unavailable` cases, and reconcile the original timing-audit flags with the recovered session telemetry before using the corpus for M2.
+**Pending handoff audit:** validate raw corpus accessibility and source/reference QA, review the `no_tex` and `unavailable` cases, and retain the original timing-audit flags alongside the [controlled rerun evidence](timing-audit-evidence.md).
 :::

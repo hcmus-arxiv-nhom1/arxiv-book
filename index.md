@@ -17,7 +17,7 @@ Project report for the course Introduction to Data Science (University of Scienc
 
 - **Code repository:** <https://github.com/hcmus-arxiv-nhom1/CodeRepo>
 - **This book (Moodle submission link):** <https://hcmus-arxiv-nhom1.github.io/arxiv-book/>
-- [Group crawl and benchmark notebook](m1/arxiv_nhom1_crawl_benchmark.ipynb): embedded source, pinned Colab launch and download
+- [Crawler and benchmark notebooks](https://github.com/hcmus-arxiv-nhom1/CodeRepo/tree/main/src/notebooks)
 
 ## Contents
 
@@ -27,7 +27,6 @@ Project report for the course Introduction to Data Science (University of Scienc
   - [Data statistics](m1/02-data-stats.ipynb)
   - [Performance](m1/03-performance.ipynb)
   - [Discussion](m1/04-discussion.md)
-  - [Colab crawl and benchmark](m1/arxiv_nhom1_crawl_benchmark.ipynb)
 - **Section 2 — Milestone 2: Hierarchical Parsing and Standardization**
   - [Overview](m2/index.md)
 

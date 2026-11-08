@@ -18,19 +18,11 @@ jupyter book build --html --execute             # build tĩnh vào _build/html
 
 ## Notebook crawl và benchmark M1
 
-Book nhúng `m1/arxiv_nhom1_only_v1_benchmark.ipynb` và `m1/arxiv_nhom1_multi_version_benchmark.ipynb` như hai trang chỉ đọc, có link mở phiên bản đã pin trên Colab và tải notebook. Cả hai có metadata `skip-execution`: CI vẫn execute các notebook phân tích CSV, nhưng không crawl, mount Drive hay đọc Secrets.
+Các notebook crawl và benchmark được duy trì trong [CodeRepo/src/notebooks](https://github.com/hcmus-arxiv-nhom1/CodeRepo/tree/main/src/notebooks). Book chứa báo cáo và notebook phân tích kết quả.
 
-Bản gốc nằm trong `CodeRepo/src/notebooks/` với cùng tên. Không sửa code cell của bản nhúng bằng tay. Để cập nhật từ một commit CodeRepo đã kiểm tra:
+Final benchmark cần toàn bộ 20.000 ID; số liệu sample và CSV giả không được ghi là final. Corpus giữ dạng raw tại `runs/<RUN_ID>/data/corpus/` trên Drive. Smoke dùng run ID riêng với full crawl; restore và xác minh sau runtime loss. Không commit corpus vào Book.
 
-```bash
-python scripts/sync_split_notebooks.py --code-repo ../CodeRepo --revision <COMMIT_SHA> --repository <OWNER/REPO>
-python scripts/test_split_notebook_mirrors.py
-jupyter book build --html --execute
-```
-
-Script lưu commit và SHA-256 của nguồn trong metadata; build Book không fetch notebook từ một branch thay đổi liên tục. Final benchmark cần toàn bộ 20.000 ID; số liệu sample và CSV giả không được ghi là final. Corpus giữ dạng raw tại `runs/<RUN_ID>/data/corpus/` trên Drive, hoặc theo shard trên HF và khôi phục về cây local phẳng cho M2. Smoke dùng run ID riêng với full crawl; restore và xác minh sau runtime loss. Không commit corpus vào Book.
-
-Trên Windows, nếu Node báo `fetch failed` khi kết nối Jupyter ở localhost, đặt `$env:NODE_OPTIONS = "--dns-result-order=ipv4first"` trong phiên PowerShell rồi build lại. Bản HTML tĩnh nằm tại `_build/html/index.html`; hai notebook có trang riêng trong mục lục M1.
+Trên Windows, nếu Node báo `fetch failed` khi kết nối Jupyter ở localhost, đặt `$env:NODE_OPTIONS = "--dns-result-order=ipv4first"` trong phiên PowerShell rồi build lại. Bản HTML tĩnh nằm tại `_build/html/index.html`.
 
 ## Quy tắc
 
