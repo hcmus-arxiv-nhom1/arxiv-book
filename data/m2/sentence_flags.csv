@@ -1,0 +1,3 @@
+scope,sentences,flagged,flagged_pct,starts_with_command,unbalanced_braces,macro_parameter
+all 95 papers with prose (100-paper smoke corpus),34380,360,1.05,263,91,6
+30 random papers (seed 2026),10758,161,1.50,,,
