@@ -2,7 +2,7 @@
 
 <!-- Drafted with the help of an AI assistant (Claude, Anthropic), disclosed per course rules. -->
 
-Milestone 2 turns the M1 corpus (`.tex` and `.bib` of every version of every paper, plus the `.bbl` of the versions that have no other reference list) into three tables: `elements`, `hierarchy` and `bibtex` {cite}`hcmus-statement-m2`. Implementation lives in [CodeRepo](https://github.com/hcmus-arxiv-nhom1/CodeRepo) under `src/parser/`; the runner and its stage interfaces are specified in `specs/0005-m2-runner.md`.
+Milestone 2 turns the M1 corpus (`.tex` and `.bib` of every version of every paper; the official corpus has no `.bbl`, see the limitation below) into three tables: `elements`, `hierarchy` and `bibtex` {cite}`hcmus-statement-m2`. Implementation lives in [CodeRepo](https://github.com/hcmus-arxiv-nhom1/CodeRepo) under `src/parser/`; the runner and its stage interfaces are specified in `specs/0005-m2-runner.md`.
 
 ## Pipeline
 

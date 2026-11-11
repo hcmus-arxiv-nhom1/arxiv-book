@@ -1,6 +1,8 @@
 # Milestone 1 — Data Crawling
 
-Milestone 1 collects the LaTeX sources (keeping only `.tex` and `.bib` files, plus the `.bbl` of a version that has no other reference list) of every version of every paper in the arXiv ID ranges assigned to the group, together with the paper metadata and the reference metadata from Semantic Scholar {cite}`hcmus-statement`.
+<!-- Edited with the help of an AI assistant (Claude, Anthropic), disclosed per course rules. -->
+
+Milestone 1 collects the LaTeX sources (keeping only `.tex` and `.bib` files; the five official runs predate the later rule that also keeps the `.bbl` of a version with no other reference list, see [Methodology](01-methodology.md)) of every version of every paper in the arXiv ID ranges assigned to the group, together with the paper metadata and the reference metadata from Semantic Scholar {cite}`hcmus-statement`.
 
 Chapters:
 
