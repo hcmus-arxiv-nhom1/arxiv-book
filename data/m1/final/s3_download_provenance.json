@@ -1,0 +1,12 @@
+{
+  "inputs_sha256": {
+    "plan.json": "0fd37fe8b8eff9630b9238969c77511354ab72a4bbc57fd606761a2fdb4b55b1",
+    "summary.json": "1e1ffda2d650a720d8bb3cf9b870760d0eb524aed78bdc32e802480af44b9115",
+    "events.jsonl": "a0fab49f11cafea12dc40992ed4156290ad8bf9f1653746f52a94d9d346b0b3a",
+    "bundles.csv": "9fcf62a27e247d2854e0ae0e1d9c04197243c6042babe284ae2224b101a15ad3"
+  },
+  "snapshot_sha256": "033d7bded327d3aa1595f5502ebfc44bcfe353a89a2011b297742d287ba4de15",
+  "manifest_sha256": "7707165d820c36a4ff85848abafcbb6f355194f4d3d2c3e94a5a2b77da21baee",
+  "created_utc": "2026-11-08T05:42:12.341838+00:00",
+  "revision": "d4a92cd0192950e7bb3a8abc60ceba9da335d255"
+}

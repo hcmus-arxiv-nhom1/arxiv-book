@@ -10,7 +10,8 @@ Chapters:
 4. [Performance](03-performance.ipynb): running time, RAM and disk on Google Colab (CPU-only).
 5. [Discussion](04-discussion.md): results, limitations, possible improvements.
 6. [Attempts and effort](05-attempts-effort.ipynb): audited historical experiments, failed attempts and lessons; real sample evidence, separate from final statistics.
-7. [Only-v1 crawl and benchmark notebook](arxiv_nhom1_only_v1_benchmark.ipynb) and [multi-version crawl and benchmark notebook](arxiv_nhom1_multi_version_benchmark.ipynb): view or open the pinned operational notebooks in Colab. Neither is executed during Book builds.
+
+Code: [`src/crawler/`](https://github.com/hcmus-arxiv-nhom1/CodeRepo/tree/main/src/crawler) (discovery and source collection), [`src/benchmark/`](https://github.com/hcmus-arxiv-nhom1/CodeRepo/tree/main/src/benchmark) (measurement and checkpoints), and [`src/notebooks/`](https://github.com/hcmus-arxiv-nhom1/CodeRepo/tree/main/src/notebooks) (operational notebooks).
 
 ```{note}
 The data-statistics and performance pages use the five-run evidence reconciled under `data/m1/final/`. Terminal coverage is not the same as usable TeX or complete reference metadata; the reports describe the remaining audit and measurement limits.

@@ -56,5 +56,5 @@ The crawler uses Python, `requests`, `lxml`, the standard archive and hashing li
 Crawler terminal states such as `ok`, `no_tex` and `unavailable` must be reported separately. A checkpoint or crawler-complete paper is not by itself evidence that usable TeX and complete reference metadata exist for every version. Final source coverage, reference QA and timing completeness require their respective evidence.
 
 :::{note}
-The five run manifests and version journals have been reconciled against the assigned snapshot; [Data statistics](02-data-stats.ipynb) presents the recorded outcomes and [Performance](03-performance.ipynb) presents the validated sampler observations. Independent raw-corpus verification and the original audit-flag discrepancies remain limitations documented in those pages.
+The five run manifests and version journals have been reconciled against the assigned snapshot; [Data statistics](02-data-stats.ipynb) presents the recorded outcomes and [Performance](03-performance.ipynb) presents the validated sampler observations. Independent raw-corpus verification remains outstanding. The original timing-audit flags and the controlled rerun are documented in [Performance](03-performance.ipynb).
 :::
