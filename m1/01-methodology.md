@@ -1,6 +1,6 @@
 # 2. Methodology
 
-<!-- Owners: Đăng, Thiên. Updated with assistance from OpenAI Codex, disclosed per course rules. -->
+<!-- Owners: Đăng, Thiên. Updated with assistance from OpenAI Codex and an AI assistant (Claude, Anthropic), disclosed per course rules. -->
 
 The team collects paper metadata, available source files and reference metadata for the assigned IDs described in [Problem and Dataset](00-problem-dataset.md). The implementation is maintained in [CodeRepo](https://github.com/hcmus-arxiv-nhom1/CodeRepo); the corpus contract is described in `docs/data_contract.md`.
 
@@ -27,7 +27,9 @@ The implemented `infer_v1` heuristic checks that the snapshot has one version an
 
 The crawler detects source format from content and reads tar/tar.gz members sequentially. It retains `.tex` and `.bib` files, reading past figures and other discarded members, and rejects unsafe paths and links. The retained TeX is not rewritten: figure commands remain for later processing. PDF/PS and other recognized non-TeX sources can result in an explicit `no_tex` record; unexpected or failed downloads remain subject to the crawler's error handling. Single-file gzip and ZIP inputs have different memory and temporary-disk behavior from streaming tar inputs {cite}`arxiv-mimetypes`.
 
-The reported M1 runs predate the subsequent `.bbl` collection work. For M2, the group is adding a conditional `.bbl` fallback to recover reference information where no `.bib` or `\bibitem` is available, following the course Q&A {cite}`hcmus-qa`. This later work is not included in the M1 crawl statistics reported here.
+The reported M1 runs predate the subsequent `.bbl` collection work. For M2, the group is adding a conditional `.bbl` fallback to recover reference information where no `.bib` or `\bibitem` is available, following the course Q&A {cite}`hcmus-qa`: a `.bbl` member is written only if the version has no `.bib` and no `\bibitem` in its `.tex`, and M2 turns it back into BibTeX. This later work is not included in the M1 crawl statistics reported here.
+
+The five official crawl runs (code revisions `ad03e0a` and `cf57e34`) were made before this rule, so they kept no `.bbl`, and they are **not** re-downloaded: the group accepts this limitation for now, and re-downloading the affected versions remains possible later. In the four multi-version runs, 1,061 of the 11,086 versions with TeX (9.6 %) had a `.bbl` dropped and no `.bib` kept. This is an upper bound for the versions without references, because some of them also list their `\bibitem` entries in the `.tex`. The only-v1-all run could not be measured the same way.
 
 Snapshot metadata supplies the base records. Where the discovery implementation needs missing information or encounters incomplete records, it can use the arXiv API and OAI-PMH `arXivRaw` fallback; unavailable historical fields may remain null {cite}`arxiv-api` {cite}`arxiv-oai`. Reference metadata is fetched separately, including references without an arXiv ID. Reference completion and source completion are evaluated independently.
 
