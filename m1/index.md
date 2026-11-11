@@ -4,15 +4,17 @@ Milestone 1 collects the LaTeX sources (keeping only `.tex` and `.bib` files, pl
 
 Chapters:
 
-1. [Methodology](01-methodology.md): how the crawler works, snapshot-first discovery, the optional S3 hybrid source, politeness and throttling, checkpoints, output layout, definition of success.
-2. [Data statistics](02-data-stats.ipynb): success rate, size before and after removing figures, references.
-3. [Performance](03-performance.ipynb): running time, RAM and disk on Google Colab (CPU-only), and the arXiv request timeline when it has been exported.
-4. [Discussion](04-discussion.md): results, limitations, possible improvements.
-5. [Attempts and effort](05-attempts-effort.ipynb): audited historical experiments, failed attempts and lessons; real sample evidence, separate from final statistics.
-6. [Group crawl and benchmark notebook](arxiv_nhom1_crawl_benchmark.ipynb): inspect the operational notebook, download it or open the pinned version in Colab. It is not executed during Book builds.
+1. [Problem and Dataset](00-problem-dataset.md): objective, assigned ID ranges and snapshot scope.
+2. [Methodology](01-methodology.md): how the crawler works, tools, politeness, output layout, definition of success.
+3. [Data statistics](02-data-stats.ipynb): success rate, size before and after removing figures, references.
+4. [Performance](03-performance.ipynb): running time, RAM and disk on Google Colab (CPU-only).
+5. [Discussion](04-discussion.md): results, limitations, possible improvements.
+6. [Attempts and effort](05-attempts-effort.ipynb): audited historical experiments, failed attempts and lessons; real sample evidence, separate from final statistics.
+
+Code: [`src/crawler/`](https://github.com/hcmus-arxiv-nhom1/CodeRepo/tree/main/src/crawler) (discovery and source collection), [`src/benchmark/`](https://github.com/hcmus-arxiv-nhom1/CodeRepo/tree/main/src/benchmark) (measurement and checkpoints), and [`src/notebooks/`](https://github.com/hcmus-arxiv-nhom1/CodeRepo/tree/main/src/notebooks) (operational notebooks).
 
 ```{note}
-The main data-statistics and performance pages currently use **placeholder CSV files** (`scripts/make_fake_data.py`) so that the book builds. They will be replaced by the CSV files exported from the code repository once the crawl and the benchmark are done.
+The data-statistics and performance pages use the five-run evidence reconciled under `data/m1/final/`. Terminal coverage is not the same as usable TeX or complete reference metadata; the reports describe the remaining audit and measurement limits.
 
-The final benchmark covers all 20,000 assigned IDs and their discovered versions on Colab CPU. The crawl runs as independent partition runs (an only-v1 run and one multi-version run per member) whose evidence is combined and audited before any figure here is called final. Sample measurements validate the pipeline only. Source/reference QA, checkpoint provenance and complete timing evidence accompany the final CSVs.
+The final selection covers all 20,000 assigned IDs and their snapshot versions on Colab CPU. Historical sample measurements are separate. The reported session sampler excludes work outside its recorded interval, including previously prepared S3 bulk downloads.
 ```

@@ -1,0 +1,19 @@
+{
+  "run_id": "bulk-plan-01",
+  "revision": "d4a92cd0192950e7bb3a8abc60ceba9da335d255",
+  "papers": 20000,
+  "bundles": 144,
+  "downloaded": 144,
+  "reused": 0,
+  "failed": 0,
+  "actual_bytes": 76693073920,
+  "manifest_bytes": 76676607227,
+  "session_wall_s": 1913.2294861690002,
+  "selection_s": 3.9498024770000484,
+  "download_s": 1136.1717224779973,
+  "verify_s": 229.8723871140014,
+  "copy_s": 506.817117945001,
+  "peak_rss_bytes": 205017088,
+  "peak_stage_bytes": 579543040,
+  "size_mismatches": 144
+}
