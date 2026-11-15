@@ -1,10 +1,10 @@
-# Parsing and standardization methodology
+# 1. Parsing and standardization methodology
 
 <!-- Drafted with the help of an AI assistant (Claude, Anthropic), disclosed per course rules. -->
 
 Milestone 2 turns the M1 corpus (`.tex` and `.bib` of every version of every paper, plus the `.bbl` files recovered afterwards, see below) into three tables: `elements`, `hierarchy` and `bibtex` {cite}`hcmus-statement-m2`. Implementation lives in [CodeRepo](https://github.com/hcmus-arxiv-nhom1/CodeRepo) under `src/parser/`; the runner and its stage interfaces are specified in `specs/0005-m2-runner.md`.
 
-## Pipeline
+## 1.1. Pipeline
 
 One command parses a whole corpus: `python -m src.parser.run --data-root data/corpus --out-dir data/m2 --work-dir work/m2`. For every paper and every version it runs, in this order:
 
@@ -17,11 +17,11 @@ One command parses a whole corpus: `python -m src.parser.run --data-root data/co
 
 A version that has no TeX is **recorded as empty, never skipped**: it appears in `hierarchy` as a root with nothing below it, and in the coverage statistics with its reason (`pdf-only`, `unavailable`, no `\documentclass`, parse error, or no folder at all).
 
-## Multi-file gathering
+## 1.2. Multi-file gathering
 
 The root of a version is the `.tex` file that contains `\documentclass`; `\input` and `\include` are followed transitively and everything else in the folder is ignored, because LaTeX would not compile it either. Text that LaTeX never typesets is removed first (`comment` environments, `\iffalse ... \fi` with its nesting), so a commented-out `\input` is not an include. When several files declare `\documentclass` (about 2.5 % of versions: main paper plus supplementary material, unedited templates), the root is the candidate that no other candidate includes, has `\begin{document}`, is not a `standalone` piece, has a `\title` matching the arXiv title, sits highest in the tree and reaches the most text, in that order; the other candidates are reported (`n_other_roots` in `m2_versions.csv`), as are includes that point to a missing file. The include depth is capped at 40 (TeX itself allows 15).
 
-## Hierarchy
+## 1.3. Hierarchy
 
 The document is the root. The level of a heading is **inferred**, not fixed: a heading is the child of the closest earlier heading of lower rank (`\chapter` < `\section` < `\subsection` < `\subsubsection` < `\paragraph`). A document without chapters therefore has its sections right under the root, and a `\subsection` before any `\section` hangs from the root.
 
@@ -35,11 +35,11 @@ The document is the root. The level of a heading is **inferred**, not fixed: a h
 
 The **References** section, `thebibliography` and `\bibliography` are left out. The abstract becomes a section "Abstract", an acknowledgements environment a section "Acknowledgements", and everything after `\appendix` is kept. Title blocks, `\newcommand` definitions, verbatim code and the commands of journal templates (`\affil`, `\preprint`, `\markboth`...) are dropped. Theorem-like environments (`theorem`, `proof`, `quote`...) are flattened into the text of the section that holds them. A footnote becomes sentences placed after the paragraph that cites it.
 
-## Sentence splitting
+## 1.4. Sentence splitting
 
 A sentence ends at `.`, `?` or `!` followed by a space and the start of a new sentence (a capital letter, a command, a math span, an opening bracket or a quote). It does **not** end inside math (`$...$`, `\(...\)`), inside the argument of a command (`\cite{a.b}`, `\url{...}`), after an abbreviation (`e.g.`, `i.e.`, `et al.`, `Fig.`, `Eq.`, `Sec.`...), inside a URL, an e-mail address or a file name, in a decimal number, after an initial (`J. Smith`) or after a bare list number. A citation that follows the period stays with its sentence (`works.\cite{a}`).
 
-## Cleanup and math normalization
+## 1.5. Cleanup and math normalization
 
 - Comments are removed. Formatting commands without meaning are removed: `\centering`, placement options such as `[htbp]`, `\midrule`, `\vspace`, `\label`, `\noindent`, size switches. Text styling is unwrapped: `\textbf{x}` becomes `x`.
 - **Inline math** is always `$...$` (from `\(...\)` and the `math` environment).
@@ -47,13 +47,13 @@ A sentence ends at `.`, `?` or `!` followed by a space and the start of a new se
 
 Normalizing twice changes nothing, so the same text always yields the same cleaned form, which is what the deduplication compares.
 
-## References: `\bibitem`, `.bib` and `.bbl` to BibTeX
+## 1.6. References: `\bibitem`, `.bib` and `.bbl` to BibTeX
 
 Entries come from three sources, in this order of preference: `\bibitem` lists in the `.tex`, the `.bib` files that the compilation path names (`\bibliography`, `\addbibresource`, `filecontents`), and the `.bbl`. Only the entries the text cites are kept, as BibTeX prints only those. A `\bibitem` is parsed with a style-aware heuristic (BibTeX `\newblock`, natbib labels, IEEE quotes, LNCS, Elsevier, ACM, revtex, AMS, hand-written lists): `citation_key`, `year`, `doi` and `url` are reliable, `authors`, `title`, `journal` and `entry_type` are heuristics, and authors are stored as "Given Family" strings.
 
 **The `.bbl` fallback.** The M1 statement keeps only `.tex` and `.bib`, so a paper whose references exist only as a compiled `.bbl` would lose them. The lecturer's answer on the course Q&A sheet {cite}`hcmus-qa` is to turn the `.bbl` back into BibTeX and, if that fails, to keep the `.bbl`. The crawler therefore keeps a `.bbl` **only** when its version has no `.bib` and no `\bibitem` in its `.tex`; M2 reads a kept `.bbl` with the same `\bibitem` parser (`source = "bbl"`). Every other `.bbl` is still left out. The five official crawl runs were made before this rule (code revisions `ad03e0a` and `cf57e34`), so they kept no `.bbl`. The group recovered them in a separate step instead of re-crawling: a recovery notebook downloaded again from arXiv the versions whose journal showed a dropped `.bbl` (1,847 papers and 2,297 versions in the candidate list, see `docs/huong_dan_khoi_phuc_bbl.md` in CodeRepo) into a **separate input root** with a SHA-256 per file. The parser takes that root with `--bbl-recovery-dir`, verifies the journal, the paper/version mapping and every recorded hash before it starts, never writes into the restored crawl, and reads the `.bbl` of a version only when `\bibitem` and `.bib` gave no entry. A recovered file is not necessarily parseable, and a `.bbl` that is read does not prove that references were extracted. The results are in [Parsing statistics](02-data-stats.ipynb): references are still missing for a small share of the parsed versions.
 
-## Deduplication across versions
+## 1.7. Deduplication across versions
 
 **References.** Entries are matched by DOI, arXiv ID or normalized title, inside a version and across versions (`vaswani2017` in v1 and `vit_transformer` in v2 are one reference). The matched entries become one: the key used in the most versions is kept, the other keys are renamed in every `\cite{...}` of the text, and the fields are **united** (a field one version lacks is taken from another). Two different references that happen to share a key get distinct keys instead of being merged.
 
@@ -61,7 +61,7 @@ Entries come from three sources, in this order of preference: `\bibitem` lists i
 
 IDs start with the publication key and end with a discriminant that is unique in the publication (`2310-12345#s7`): `s` sentence, `e` equation, `f` figure, `h` heading, `l` list, `i` item and `#rootN` for the document node of version N, whose parent is the publication key.
 
-## Tables
+## 1.8. Tables
 
 | Table | Columns |
 | --- | --- |
@@ -71,11 +71,11 @@ IDs start with the publication key and end with a discriminant that is unique in
 
 They are written as zstd-compressed Parquet shards (`shard-00000/`, ...). `python -m src.qa.check_tables` checks the types, the uniqueness of the IDs, that every parent exists, that each version has exactly one root and that every node is reachable from it, and that a branch has a single parent.
 
-## Running a whole corpus: shards, resume, workers
+## 1.9. Running a whole corpus: shards, resume, workers
 
 Papers are written in shards (100 papers by default): a shard is built in `.staging/`, renamed to `shard-NNNNN/` (a directory rename is atomic, so the three files appear together), and only then recorded in the fsynced journal `shards.jsonl`. After an interruption the same command resumes: a half-written shard is deleted, committed papers are skipped, and at most one shard of work is lost. `--workers N` parses papers in N processes while the results are consumed in folder order, so the shards do not depend on N. `--scan` runs only gather and references, to see where the parser will have trouble before a long run. The statistics of the next chapter come from the files the runner writes as it goes (`m2_versions.csv`, `m2_papers.csv`), not from re-reading the corpus.
 
-## The official run
+## 1.10. The official run
 
 The numbers of the next chapters come from one run, `m2-full-01`, on a Google Colab **CPU-only** runtime (2 vCPUs, 13.6 GB RAM) {cite}`hcmus-statement-m2`:
 
