@@ -1,0 +1,27 @@
+{
+  "ok": true,
+  "n_problems": 0,
+  "problems": [],
+  "rows": {
+    "elements": 9226078,
+    "hierarchy": 11762846,
+    "bibtex": 842436
+  },
+  "elements_by_kind": {
+    "document": 26491,
+    "section": 180624,
+    "sentence": 7217158,
+    "figure": 222272,
+    "itemize": 68191,
+    "item": 236192,
+    "subsection": 221529,
+    "subsubsection": 49554,
+    "equation": 907934,
+    "paragraph": 95627,
+    "chapter": 506
+  },
+  "papers": 20000,
+  "versions": 26491,
+  "qa_session_wall_seconds": 391.6638374280001,
+  "timing_scope": "current_session_only"
+}

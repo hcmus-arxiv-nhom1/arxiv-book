@@ -1,9 +1,11 @@
 metric,value,unit,tool
-wall_time_e2e,11.25,s,perf_counter
-time_per_paper,0.1125,s,wall / papers
-ram_max,197.1,MB,psutil RSS of the process tree
-ram_mean,143.3,MB,"psutil RSS, mean"
-disk_max,3.3,MB,du
-output_size,3.28,MB,du of the Parquet shards
-papers,100,papers,m2_papers.csv
-versions,130,versions,m2_versions.csv
+wall_time_e2e,9604.44,s,"sum of the sessions, perf_counter"
+time_per_paper,0.4802,s,wall / publications
+ram_max,761.5,MB,psutil RSS of the process tree
+ram_mean,290.4,MB,mean of the samples
+input_size,5607.002,MB,du of the corpus read
+output_size,663.25,MB,du of the Parquet shards
+disk_max,6285.862,MB,input + peak of output and work
+sessions,1,sessions,m2_sessions.jsonl
+papers,20000,papers,m2_papers.csv
+versions,26491,versions,m2_versions.csv
