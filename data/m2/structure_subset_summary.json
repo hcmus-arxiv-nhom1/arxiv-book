@@ -1,0 +1,23 @@
+{
+  "scope": {
+    "kind": "subset",
+    "source_runs": [
+      "multi-thien-0000-4999"
+    ],
+    "papers_with_source": 1114,
+    "parsed_versions_skipped_without_source": 22625
+  },
+  "versions": 2407,
+  "agreement": {
+    "headings": 2357,
+    "formulas": 2147,
+    "floats": 2352,
+    "items": 2342
+  },
+  "agreement_rates": {
+    "headings": 0.9792272538429581,
+    "formulas": 0.8919817199833818,
+    "floats": 0.9771499792272539,
+    "items": 0.9729954299958454
+  }
+}

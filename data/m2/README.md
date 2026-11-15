@@ -16,7 +16,7 @@ Export of the run on a Google Colab CPU runtime (2 vCPUs, 13.6 GB RAM): 20,000 p
 
 ## Sample of 100 publications (not the official run)
 
-These three files come from the first, local run on the 100-paper M1 smoke crawl (`2606.25734`–`2606.25833`, 121 versions) and were **not** recomputed on the official output: the structural comparison needs the source corpus, which the QA of the official run did not restore. The pages that show them say so.
+These three files come from the first, local run on the 100-paper M1 smoke crawl (`2606.25734`–`2606.25833`, 121 versions) and are historical evidence from a previous revision. A later source comparison was performed separately on a subset of the official output, described below.
 
 | File | What it is |
 | --- | --- |
@@ -24,3 +24,7 @@ These three files come from the first, local run on the 100-paper M1 smoke crawl
 | `audit_findings.csv`, `sentence_flags.csv` | a reading of 30 random papers (seed 2026) and an automatic scan of the sentences |
 
 The manual score sheet (`src.qa.audit_sample`) is still to be filled by a team member.
+
+## Official source subset `qa-thien-01`
+
+The `structure_subset_*` CSV and JSON files are from [QA evidence on Drive](https://drive.google.com/drive/folders/1f6AsmOwSaq70vcgoRWUsbKZbfrfhI2Ye), using parser revision `fc0d00042e6d47378a6076383b6261a4aa5065f3` and QA revision `6c0f04bb5f9ae415d1604ba2989fc6222ab66745`. The subset comprises source run `multi-thien-0000-4999`, 1,114 papers and 2,407 parsed versions; 22,625 parsed versions were outside this source subset. Counts compare structures, not semantic correctness. The status records manual review pending. The official full-table QA files above remain unchanged.
