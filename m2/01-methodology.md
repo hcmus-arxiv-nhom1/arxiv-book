@@ -2,7 +2,7 @@
 
 <!-- Drafted with the help of an AI assistant (Claude, Anthropic), disclosed per course rules. -->
 
-Milestone 2 turns the M1 corpus (`.tex` and `.bib` of every version of every paper; the official corpus has no `.bbl`, see the limitation below) into three tables: `elements`, `hierarchy` and `bibtex` {cite}`hcmus-statement-m2`. Implementation lives in [CodeRepo](https://github.com/hcmus-arxiv-nhom1/CodeRepo) under `src/parser/`; the runner and its stage interfaces are specified in `specs/0005-m2-runner.md`.
+Milestone 2 turns the M1 corpus (`.tex` and `.bib` of every version of every paper, plus the `.bbl` files recovered afterwards, see below) into three tables: `elements`, `hierarchy` and `bibtex` {cite}`hcmus-statement-m2`. Implementation lives in [CodeRepo](https://github.com/hcmus-arxiv-nhom1/CodeRepo) under `src/parser/`; the runner and its stage interfaces are specified in `specs/0005-m2-runner.md`.
 
 ## Pipeline
 
@@ -51,7 +51,7 @@ Normalizing twice changes nothing, so the same text always yields the same clean
 
 Entries come from three sources, in this order of preference: `\bibitem` lists in the `.tex`, the `.bib` files that the compilation path names (`\bibliography`, `\addbibresource`, `filecontents`), and the `.bbl`. Only the entries the text cites are kept, as BibTeX prints only those. A `\bibitem` is parsed with a style-aware heuristic (BibTeX `\newblock`, natbib labels, IEEE quotes, LNCS, Elsevier, ACM, revtex, AMS, hand-written lists): `citation_key`, `year`, `doi` and `url` are reliable, `authors`, `title`, `journal` and `entry_type` are heuristics, and authors are stored as "Given Family" strings.
 
-**The `.bbl` fallback.** The M1 statement keeps only `.tex` and `.bib`, so a paper whose references exist only as a compiled `.bbl` would lose them. The lecturer's answer on the course Q&A sheet {cite}`hcmus-qa` is to turn the `.bbl` back into BibTeX and, if that fails, to keep the `.bbl`. The crawler therefore keeps a `.bbl` **only** when its version has no `.bib` and no `\bibitem` in its `.tex`; M2 reads a kept `.bbl` with the same `\bibitem` parser (`source = "bbl"`). Every other `.bbl` is still left out. Versions crawled before this rule have no `.bbl`: they keep an empty reference list, counted as a limitation in the statistics. This concerns the whole official corpus: its five crawl runs were made before the rule and are not re-downloaded (the group accepts the limitation for now). In the four multi-version runs, 1,061 of the 11,086 versions with TeX (9.6 %) had a `.bbl` dropped and no `.bib` kept, an upper bound for the versions without references; the only-v1 run could not be measured the same way.
+**The `.bbl` fallback.** The M1 statement keeps only `.tex` and `.bib`, so a paper whose references exist only as a compiled `.bbl` would lose them. The lecturer's answer on the course Q&A sheet {cite}`hcmus-qa` is to turn the `.bbl` back into BibTeX and, if that fails, to keep the `.bbl`. The crawler therefore keeps a `.bbl` **only** when its version has no `.bib` and no `\bibitem` in its `.tex`; M2 reads a kept `.bbl` with the same `\bibitem` parser (`source = "bbl"`). Every other `.bbl` is still left out. The five official crawl runs were made before this rule (code revisions `ad03e0a` and `cf57e34`), so they kept no `.bbl`. The group recovered them in a separate step instead of re-crawling: a recovery notebook downloaded again from arXiv the versions whose journal showed a dropped `.bbl` (1,847 papers and 2,297 versions in the candidate list, see `docs/huong_dan_khoi_phuc_bbl.md` in CodeRepo) into a **separate input root** with a SHA-256 per file. The parser takes that root with `--bbl-recovery-dir`, verifies the journal, the paper/version mapping and every recorded hash before it starts, never writes into the restored crawl, and reads the `.bbl` of a version only when `\bibitem` and `.bib` gave no entry. A recovered file is not necessarily parseable, and a `.bbl` that is read does not prove that references were extracted. The results are in [Parsing statistics](02-data-stats.ipynb): references are still missing for a small share of the parsed versions.
 
 ## Deduplication across versions
 
@@ -75,6 +75,13 @@ They are written as zstd-compressed Parquet shards (`shard-00000/`, ...). `pytho
 
 Papers are written in shards (100 papers by default): a shard is built in `.staging/`, renamed to `shard-NNNNN/` (a directory rename is atomic, so the three files appear together), and only then recorded in the fsynced journal `shards.jsonl`. After an interruption the same command resumes: a half-written shard is deleted, committed papers are skipped, and at most one shard of work is lost. `--workers N` parses papers in N processes while the results are consumed in folder order, so the shards do not depend on N. `--scan` runs only gather and references, to see where the parser will have trouble before a long run. The statistics of the next chapter come from the files the runner writes as it goes (`m2_versions.csv`, `m2_papers.csv`), not from re-reading the corpus.
 
-```{note}
-Everything above is computed from the corpus of the M1 smoke crawl (100 papers) until the official crawl is complete; the next chapters say which data each number comes from.
-```
+## The official run
+
+The numbers of the next chapters come from one run, `m2-full-01`, on a Google Colab **CPU-only** runtime (2 vCPUs, 13.6 GB RAM) {cite}`hcmus-statement-m2`:
+
+1. The corpus is the five M1 crawl runs (`only-v1-all` and one `multi-*` run per member), restored from their Drive checkpoints to the local disk with a SHA-256 check of every file. This copy is setup and is outside the measured time.
+2. The parser reads the five runs as one corpus, stops unless the papers found are exactly the **20,000 assigned IDs** (`--expect-assigned`; the check found 20,000 and no extra or missing paper), and uses 2 worker processes, shards of 100 papers and a 600 s limit per paper.
+3. Outputs are copied to Drive while the run goes; the committed shards are listed in a hashed journal, so an interrupted run resumes from the last shard. The official run needed **one session** and no resume.
+4. A separate QA notebook then verifies the committed shard hashes and runs the table checks on the whole output without parsing again (next chapters).
+
+The code revision of the parser, the input hashes of the five crawl indexes and of the `.bbl` recovery journal are recorded in `M2_MANIFEST.json` on the team Drive.

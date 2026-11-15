@@ -1,0 +1,34 @@
+{
+  "started_at": "2026-11-14T20:50:20Z",
+  "finished_at": "2026-11-14T22:34:21Z",
+  "interrupted": false,
+  "scan_only": false,
+  "workers": 2,
+  "wall_s": 6241.533,
+  "papers_this_run": 20000,
+  "papers_failed_this_run": 0,
+  "avg_paper_s": 0.3121,
+  "papers_committed_total": 20000,
+  "version_status_this_run": {
+    "parsed": 25032,
+    "empty": 1450,
+    "no_root": 9
+  },
+  "rows_written_this_run": {
+    "elements": 9226078,
+    "hierarchy": 11762846,
+    "bibtex": 842436
+  },
+  "shards_written_this_run": 200,
+  "data_roots": [
+    "/content/m2-local/only-v1-all/data/corpus",
+    "/content/m2-local/multi-dang-0000-4999/data/corpus",
+    "/content/m2-local/multi-hieu-0000-4999/data/corpus",
+    "/content/m2-local/multi-thien-0000-4999/data/corpus",
+    "/content/m2-local/multi-tien-0000-4999/data/corpus"
+  ],
+  "assigned_check": {
+    "expected": 20000,
+    "found": 20000
+  }
+}

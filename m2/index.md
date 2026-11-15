@@ -12,7 +12,7 @@ Chapters:
 4. [Quality audit and limitations](04-quality.ipynb): integrity checks, agreement with the source, a reading of random papers, known limits.
 
 ```{important}
-**What the numbers are.** The statistics, performance and audit pages are computed at build time from the CSV files in `data/m2/`. Until the full crawl has been parsed on Google Colab, those files hold the output of the real pipeline on the **100-paper M1 smoke crawl**, run on a local machine. They are a small subset and not the official benchmark; each page says so, and the files are replaced by the official export without changing the pages.
+**What the numbers are.** The statistics, performance and integrity numbers are computed at build time from the CSV and JSON files in `data/m2/`, which are the export of the official run `m2-full-01`: the **20,000 assigned publications and their 26,491 versions**, parsed on a Google Colab CPU runtime (see [Performance](03-performance.ipynb)). Two things are still a sample: the comparison of the tree with the source and the reading of random papers were done on 100 publications, and the human score sheet is not filled yet. [Quality audit and limitations](04-quality.ipynb) says which is which.
 ```
 
 Code: [`src/parser/`](https://github.com/hcmus-arxiv-nhom1/CodeRepo/tree/main/src/parser) (stages and runner), [`src/qa/`](https://github.com/hcmus-arxiv-nhom1/CodeRepo/tree/main/src/qa) (checks and audits), [`src/benchmark/m2_benchmark.py`](https://github.com/hcmus-arxiv-nhom1/CodeRepo/blob/main/src/benchmark/m2_benchmark.py) (measurement).
