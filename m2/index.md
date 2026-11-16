@@ -16,3 +16,5 @@ Chapters:
 ```
 
 Code: [`src/parser/`](https://github.com/hcmus-arxiv-nhom1/CodeRepo/tree/main/src/parser) (stages and runner), [`src/qa/`](https://github.com/hcmus-arxiv-nhom1/CodeRepo/tree/main/src/qa) (checks and audits), [`src/benchmark/m2_benchmark.py`](https://github.com/hcmus-arxiv-nhom1/CodeRepo/blob/main/src/benchmark/m2_benchmark.py) (measurement).
+
+The derived dataset removes the 1,450 empty-version roots after the benchmark. The original benchmark and the full version journal remain unchanged; see [Quality audit](04-quality.ipynb).

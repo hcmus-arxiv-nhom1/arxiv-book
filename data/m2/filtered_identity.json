@@ -1,0 +1,11 @@
+{
+  "expected_shards": 200,
+  "hashes_sha256": "ccb21cb4c08d1d8c5f3f497df8ac5be87f36c9bd54114b4119a82305dde9eb20",
+  "journal_sha256": "15c1e8cb76c599c8bab39031465dc9737e4687bd42961f7fbc33e4b3b6b4fc0e",
+  "manifest_sha256": "2e2f9cab27df032a74d52d94bb7f993dc48576812bb89bec4766b0d346ebc681",
+  "parser_revision": "fc0d00042e6d47378a6076383b6261a4aa5065f3",
+  "qa_revision": "872e63be101b87dde541b0596fdeec4f034f283d",
+  "run_id": "m2-full-01",
+  "session_sha256": "220c4746b77232957255a6380d11ed2771fa2809b74318ad66ba1a2acdfe36b0",
+  "summary_sha256": "d5ec72ecea88023da7fc63030501a443de2e443511c0676d796ca5918d2acef6"
+}

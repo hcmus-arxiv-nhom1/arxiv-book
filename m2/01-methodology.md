@@ -15,7 +15,7 @@ One command parses a whole corpus: `python -m src.parser.run --data-root data/co
 5. **Deduplicate** (`dedup.py`): one paper, all versions, to the rows of the three tables.
 6. **Write** (`writer.py`): Parquet shards with the types of the statement.
 
-A version that has no TeX is **recorded as empty, never skipped**: it appears in `hierarchy` as a root with nothing below it, and in the coverage statistics with its reason (`pdf-only`, `unavailable`, no `\documentclass`, parse error, or no folder at all).
+A version without TeX is **recorded as empty, never skipped**. The original parser output includes an empty document root; a separate post-processing run removes that root and its hierarchy edge from the derived dataset, without rerunning the parser. The journal retains the version and its M1 reason (`no_tex` or `unavailable`). Versions with TeX but no `\documentclass` are separately recorded as `no_root`; parse errors and missing folders are distinct statuses. The filter does not download PDFs or run OCR.
 
 ## 1.2. Multi-file gathering
 
@@ -69,7 +69,7 @@ IDs start with the publication key and end with a discriminant that is unique in
 | `hierarchy` | `arxiv_id` (string, not null), `version` (int), `element_id` (string, not null), `parent_id` (string, not null) |
 | `bibtex` | `arxiv_id` (string, not null), `citation_key` (string, not null), `entry_type` (dictionary string), `title`, `authors` (list of strings), `year` (int, nullable), `doi`, `journal`, `url` |
 
-They are written as zstd-compressed Parquet shards (`shard-00000/`, ...). `python -m src.qa.check_tables` checks the types, the uniqueness of the IDs, that every parent exists, that each version has exactly one root and that every node is reachable from it, and that a branch has a single parent.
+They are written as zstd-compressed Parquet shards (`shard-00000/`, ...). `python -m src.qa.check_tables` checks the types, the uniqueness of the IDs, that every parent exists, that each represented version has exactly one root and that every node is reachable from it, and that a branch has a single parent.
 
 ## 1.9. Running a whole corpus: shards, resume, workers
 

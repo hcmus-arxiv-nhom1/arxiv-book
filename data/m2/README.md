@@ -28,3 +28,7 @@ The manual score sheet (`src.qa.audit_sample`) is still to be filled by a team m
 ## Official source subset `qa-thien-01`
 
 The `structure_subset_*` CSV and JSON files are from [QA evidence on Drive](https://drive.google.com/drive/folders/1f6AsmOwSaq70vcgoRWUsbKZbfrfhI2Ye), using parser revision `fc0d00042e6d47378a6076383b6261a4aa5065f3` and QA revision `6c0f04bb5f9ae415d1604ba2989fc6222ab66745`. The subset comprises source run `multi-thien-0000-4999`, 1,114 papers with source available, of which 1,079 contribute 2,407 parsed versions to the comparison; 22,625 parsed versions were outside this source subset. Counts compare structures, not semantic correctness. The status records manual review pending. The official full-table QA files above remain unchanged.
+
+## Derived output without empty-version roots
+
+`filtered_qa.json`, `filter_report.json`, `filtered_identity.json` and `filter_original_qa.json` come from the [derived run on Drive](https://drive.google.com/drive/folders/1HmsCAJkheHJxOvoXtbM3NF90ZHhR0-VG). The filter removed 1,450 `empty` roots over 200 shards, retained the source journal and left 9 `no_root` versions unchanged. `filtered_qa.json` counts 25,041 versions represented in the hierarchy; the journal still records all 26,491 versions. Filtering happened after the original benchmark; its time and output size describe the original output.

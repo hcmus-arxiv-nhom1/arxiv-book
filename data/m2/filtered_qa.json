@@ -1,0 +1,25 @@
+{
+  "elements_by_kind": {
+    "chapter": 506,
+    "document": 25041,
+    "equation": 907934,
+    "figure": 222272,
+    "item": 236192,
+    "itemize": 68191,
+    "paragraph": 95627,
+    "section": 180624,
+    "sentence": 7217158,
+    "subsection": 221529,
+    "subsubsection": 49554
+  },
+  "n_problems": 0,
+  "ok": true,
+  "papers": 20000,
+  "problems": [],
+  "rows": {
+    "bibtex": 842436,
+    "elements": 9224628,
+    "hierarchy": 11761396
+  },
+  "versions": 25041
+}
