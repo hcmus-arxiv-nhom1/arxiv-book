@@ -1,0 +1,8 @@
+{
+  "table_check": "passed",
+  "structure": "complete_subset",
+  "source_runs": [
+    "multi-thien-0000-4999"
+  ],
+  "manual_review": "pending"
+}

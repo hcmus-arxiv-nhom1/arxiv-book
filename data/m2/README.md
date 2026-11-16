@@ -16,7 +16,7 @@ Export of the run on a Google Colab CPU runtime (2 vCPUs, 13.6 GB RAM): 20,000 p
 
 ## Sample of 100 publications (not the official run)
 
-These three files come from the first, local run on the 100-paper M1 smoke crawl (`2606.25734`–`2606.25833`, 121 versions) and were **not** recomputed on the official output: the structural comparison needs the source corpus, which the QA of the official run did not restore. The pages that show them say so.
+These three files come from the first, local run on the 100-paper M1 smoke crawl (`2606.25734`–`2606.25833`, 121 versions) and are historical evidence from a previous revision. A later source comparison was performed separately on a subset of the official output, described below.
 
 | File | What it is |
 | --- | --- |
@@ -24,3 +24,15 @@ These three files come from the first, local run on the 100-paper M1 smoke crawl
 | `audit_findings.csv`, `sentence_flags.csv` | a reading of 30 random papers (seed 2026) and an automatic scan of the sentences |
 
 The manual score sheet (`src.qa.audit_sample`) is still to be filled by a team member.
+
+## Official source subset `qa-thien-01`
+
+The `structure_subset_*` CSV and JSON files are from [QA evidence on Drive](https://drive.google.com/drive/folders/1f6AsmOwSaq70vcgoRWUsbKZbfrfhI2Ye), using parser revision `fc0d00042e6d47378a6076383b6261a4aa5065f3` and QA revision `6c0f04bb5f9ae415d1604ba2989fc6222ab66745`. The subset comprises source run `multi-thien-0000-4999`, 1,114 papers with source available, of which 1,079 contribute 2,407 parsed versions to the comparison; 22,625 parsed versions were outside this source subset. Counts compare structures, not semantic correctness. The status records manual review pending. The official full-table QA files above remain unchanged.
+
+## Derived output without empty-version roots
+
+`filtered_qa.json`, `filter_report.json`, `filtered_identity.json` and `filter_original_qa.json` come from the [derived run on Drive](https://drive.google.com/drive/folders/1HmsCAJkheHJxOvoXtbM3NF90ZHhR0-VG). The filter removed 1,450 `empty` roots over 200 shards, retained the source journal and left 9 `no_root` versions unchanged. `filtered_qa.json` counts 25,041 versions represented in the hierarchy; the journal still records all 26,491 versions. Filtering happened after the original benchmark; its time and output size describe the original output.
+
+## Empty TeX warning reachability audit
+
+`tex_warning_reachability.jsonl` records a read-only, targeted re-download and gather check of the 48 versions with 69 M1 `tex_empty` warnings. Roots matched M2 records. For 27 versions all TeX hashes matched locally available M1 checkpoint indexes; for 21 versions hashes could not be checked against the M1 checkpoint. These observations do not establish semantic completeness. No parser or benchmark was rerun.

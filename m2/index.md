@@ -12,7 +12,9 @@ Chapters:
 4. [Quality audit and limitations](04-quality.ipynb): integrity checks, agreement with the source, a reading of random papers, known limits.
 
 ```{important}
-**What the numbers are.** The statistics, performance and integrity numbers are computed at build time from the CSV and JSON files in `data/m2/`, which are the export of the official run `m2-full-01`: the **20,000 assigned publications and their 26,491 versions**, parsed on a Google Colab CPU runtime (see [Performance](03-performance.ipynb)). Two things are still a sample: the comparison of the tree with the source and the reading of random papers were done on 100 publications, and the human score sheet is not filled yet. [Quality audit and limitations](04-quality.ipynb) says which is which.
+**What the numbers are.** The statistics, performance and integrity numbers are computed at build time from the CSV and JSON files in `data/m2/`, which are the export of the official run `m2-full-01`: the **20,000 assigned publications and their 26,491 versions**, parsed on a Google Colab CPU runtime (see [Performance](03-performance.ipynb)). Two things are still a sample: the official output was compared with source for 2,407 versions of 1,079 publications in the multi-Thiên run (1,114 publications have source available); an earlier reading used 30 papers from a separate 100-publication sample, and the human score sheet is not filled yet. [Quality audit and limitations](04-quality.ipynb) says which is which.
 ```
 
 Code: [`src/parser/`](https://github.com/hcmus-arxiv-nhom1/CodeRepo/tree/main/src/parser) (stages and runner), [`src/qa/`](https://github.com/hcmus-arxiv-nhom1/CodeRepo/tree/main/src/qa) (checks and audits), [`src/benchmark/m2_benchmark.py`](https://github.com/hcmus-arxiv-nhom1/CodeRepo/blob/main/src/benchmark/m2_benchmark.py) (measurement).
+
+The derived dataset removes the 1,450 empty-version roots after the benchmark. The original benchmark and the full version journal remain unchanged; see [Quality audit](04-quality.ipynb).
