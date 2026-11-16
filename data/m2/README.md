@@ -32,3 +32,7 @@ The `structure_subset_*` CSV and JSON files are from [QA evidence on Drive](http
 ## Derived output without empty-version roots
 
 `filtered_qa.json`, `filter_report.json`, `filtered_identity.json` and `filter_original_qa.json` come from the [derived run on Drive](https://drive.google.com/drive/folders/1HmsCAJkheHJxOvoXtbM3NF90ZHhR0-VG). The filter removed 1,450 `empty` roots over 200 shards, retained the source journal and left 9 `no_root` versions unchanged. `filtered_qa.json` counts 25,041 versions represented in the hierarchy; the journal still records all 26,491 versions. Filtering happened after the original benchmark; its time and output size describe the original output.
+
+## Empty TeX warning reachability audit
+
+`tex_warning_reachability.jsonl` records a read-only, targeted re-download and gather check of the 48 versions with 69 M1 `tex_empty` warnings. Roots matched M2 records. For 27 versions all TeX hashes matched locally available M1 checkpoint indexes; for 21 versions hashes could not be checked against the M1 checkpoint. These observations do not establish semantic completeness. No parser or benchmark was rerun.
