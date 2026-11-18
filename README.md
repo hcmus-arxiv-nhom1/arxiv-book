@@ -1,38 +1,38 @@
-# arxiv-book — Nhóm 1
+# arxiv-book — Group 1
 
-> **KHÔNG đổi tên org/repo đến hết hạn poster.** URL book nằm trong link nộp Moodle, đổi tên là link chết.
+> **Do not rename the organization or repository before the poster deadline.** The book URL is included in the Moodle submission; renaming it would break the link.
 
 - Book: <https://hcmus-arxiv-nhom1.github.io/arxiv-book/>
-- Code repo: <https://github.com/hcmus-arxiv-nhom1/CodeRepo>
+- Code repository: <https://github.com/hcmus-arxiv-nhom1/CodeRepo>
 
-Book dùng **Jupyter Book 2** (nền MyST). Cấu hình và mục lục nằm trong `myst.yml`.
+The book uses **Jupyter Book 2** (MyST). Its configuration and table of contents are in `myst.yml`.
 
-## Build ở máy
+## Local build
 
 ```bash
 pip install -r requirements.txt
-pip install pre-commit && pre-commit install   # nbstripout: xoá output notebook trước khi commit
-jupyter book start --execute                    # xem trực tiếp ở http://localhost:3000
-jupyter book build --html --execute             # build tĩnh vào _build/html
+pip install pre-commit && pre-commit install   # nbstripout removes notebook outputs before commit
+jupyter book start --execute                    # preview at http://localhost:3000
+jupyter book build --html --execute             # build static HTML in _build/html
 ```
 
-## Notebook crawl và benchmark M1
+## M1 crawl and benchmark notebooks
 
-Các notebook crawl và benchmark được duy trì trong [CodeRepo/src/notebooks](https://github.com/hcmus-arxiv-nhom1/CodeRepo/tree/main/src/notebooks). Book chứa báo cáo và notebook phân tích kết quả.
+The crawl and benchmark notebooks are maintained in [CodeRepo/src/notebooks](https://github.com/hcmus-arxiv-nhom1/CodeRepo/tree/main/src/notebooks). This book contains the report and result-analysis notebooks.
 
-Final benchmark cần toàn bộ 20.000 ID; số liệu sample và CSV giả không được ghi là final. Corpus giữ dạng raw tại `runs/<RUN_ID>/data/corpus/` trên Drive. Smoke dùng run ID riêng với full crawl; restore và xác minh sau runtime loss. Không commit corpus vào Book.
+The final benchmark requires all 20,000 IDs; sample numbers and placeholder CSVs must not be presented as final results. The raw corpus is stored on Drive under `runs/<RUN_ID>/data/corpus/`. Use a separate run ID for smoke tests and restore and verify after runtime loss. Do not commit the corpus to the book.
 
-Trên Windows, nếu Node báo `fetch failed` khi kết nối Jupyter ở localhost, đặt `$env:NODE_OPTIONS = "--dns-result-order=ipv4first"` trong phiên PowerShell rồi build lại. Bản HTML tĩnh nằm tại `_build/html/index.html`.
+On Windows, if Node reports `fetch failed` while connecting to Jupyter on localhost, set `$env:NODE_OPTIONS = "--dns-result-order=ipv4first"` in PowerShell and rebuild. The static HTML entry point is `_build/html/index.html`.
 
-## Quy tắc
+## Rules
 
-- **Notebook không chứa output.** nbstripout xoá output khi commit; CI build với `--execute`, nên mọi figure/table sinh lúc compile.
-- **Book chỉ đọc CSV trong `data/`**, không đọc dữ liệu thô. Schema chốt trong `docs/data_contract.md` của code repo.
-- Notebook Data Statistics và Performance đọc evidence đã đối chiếu trong `data/m1/final/`; các CSV giả cũ ở `data/m1/` không phải kết quả chính thức. Tái tạo bộ dữ liệu bằng `python scripts/collect_final_m1.py --workspace ..` khi workspace có đủ evidence và snapshot, sau đó kiểm tra `provenance.json` và các giới hạn QA/measurement.
-- Cập nhật CSV thật: commit message ghi commit của code repo đã dùng, ví dụ `data: update m1 stats from CodeRepo@abc1234`.
-- Mọi thay đổi vào `main` đi qua PR. CODEOWNERS tự gán reviewer; workflow `check` phải pass; người merge không phải tác giả.
+- **Notebooks contain no saved outputs.** nbstripout removes outputs on commit; CI builds with `--execute`, so figures and tables are generated during compilation.
+- **The book reads CSV files from `data/` only**, not the raw corpus. The schema is defined in the code repository's `docs/data_contract.md`.
+- The Data Statistics and Performance notebooks read reconciled evidence in `data/m1/final/`; old placeholder CSVs in `data/m1/` are not official results. Recreate the data with `python scripts/collect_final_m1.py --workspace ..` when the workspace contains the required evidence and snapshot, then check `provenance.json` and the QA and measurement limitations.
+- When updating real CSVs, include the code repository commit in the commit message, for example `data: update m1 stats from CodeRepo@abc1234`.
+- All changes to `main` go through a PR. CODEOWNERS assigns reviewers, the `check` workflow must pass, and the author must not merge their own PR.
 
-## Cài đặt GitHub (một lần)
+## GitHub setup (one-time)
 
 1. Settings → Pages → Source: **GitHub Actions**.
-2. Settings → Branches: protect `main`, cần 1 approve, bắt buộc check `check`, không cho tác giả tự merge.
+2. Settings → Branches: protect `main`, require one approval and the `check` workflow, and prevent authors from merging their own PRs.

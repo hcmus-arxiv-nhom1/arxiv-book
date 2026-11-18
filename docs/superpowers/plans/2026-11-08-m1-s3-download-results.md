@@ -1,31 +1,31 @@
-# Kế hoạch bổ sung benchmark tải S3 vào book M1
+# Plan to add the S3 download benchmark to the M1 book
 
-**Mục tiêu:** Báo cáo lần tải 144 bundle trong mục Performance, với provenance và phạm vi đo rõ ràng.
+**Goal:** Report the download of 144 bundles in the Performance section, with clear provenance and measurement boundaries.
 
-**Nguồn:** `final_evidence/s3-download-benchmark/bulk-plan-01/{plan.json,summary.json,events.jsonl,bundles.csv}` tại workspace. M1 Performance hiện ở `m1/03-performance.ipynb`. Đây là lần tải ngày 08/11/2026 sau các phiên crawl M1, không phải measurement của lượt chuẩn bị bulk trước các phiên đó.
+**Source:** `final_evidence/s3-download-benchmark/bulk-plan-01/{plan.json,summary.json,events.jsonl,bundles.csv}` in the workspace. M1 Performance is in `m1/03-performance.ipynb`. This download took place on 8 November 2026 after the M1 crawl sessions; it is not a measurement of the bulk preparation that preceded them.
 
-## 1. Kiểm chứng và chuẩn hóa evidence
+## 1. Verify and normalize the evidence
 
-- [ ] Đối chiếu summary, events, CSV và plan: 144 key duy nhất, trạng thái `downloaded`, phạm vi 20.000 ID, tổng bytes, số bundle và manifest/snapshot hashes. Phát hiện mâu thuẫn phải báo lỗi, không tự suy diễn.
-- [ ] Trích xuất bản CSV gọn theo bundle và summary CSV/JSON vào `data/m1/` theo mẫu hiện có. Lưu SHA-256 của bốn file đầu vào, revision `d4a92cd0192950e7bb3a8abc60ceba9da335d255`, phạm vi, timestamp và tên run; không đưa secrets hoặc đường dẫn cá nhân không cần thiết vào book.
-- [ ] Giữ số nguyên bytes và thời gian gốc trong dữ liệu; chỉ làm tròn số giây khi hiển thị. Kiểm tra `resource_errors`, giá trị thiếu, 144 chênh lệch size và sự nhất quán trạng thái; không ghi khẳng định kiểm MD5 sau copy lên Drive.
+- [ ] Reconcile summary, events, CSV and plan: 144 unique keys with `downloaded` status, scope of 20,000 IDs, total bytes, bundle count, and manifest/snapshot hashes. Report inconsistencies rather than inventing explanations.
+- [ ] Export a compact per-bundle CSV and summary CSV/JSON to `data/m1/` using the existing convention. Record SHA-256 hashes of the four inputs, revision `d4a92cd0192950e7bb3a8abc60ceba9da335d255`, scope, timestamp and run name; exclude secrets and unnecessary personal paths from the book.
+- [ ] Retain integer byte counts and original timings in the data; round seconds only for display. Check `resource_errors`, missing values, 144 size differences and status consistency; do not claim an MD5 check after copying to Drive.
 
-## 2. Trình bày trong Performance
+## 2. Present the results in Performance
 
-- [ ] Thêm một tiểu mục đánh số phù hợp trong `m1/03-performance.ipynb`, cập nhật đánh số tiếp theo nếu cần. Bảng tóm tắt có chú thích dưới chân, mở rộng phù hợp và cuộn ngang khi cần: ID, số bundle tải mới/dùng lại/lỗi, bytes thực tế và manifest, session wall, thời gian chọn, download, MD5, copy, throughput, peak RSS và stage disk.
-- [ ] Trình bày session wall 1.913 giây (~31 phút 53 giây); download 1.136 giây, MD5 230 giây, copy 507 giây và phần còn lại xấp xỉ 40 giây. Selection ~4 giây đo riêng trước session. Throughput tải có trọng số = tổng bytes tải mới / tổng download seconds (~67,5 MB/s); throughput toàn phiên (~40,1 MB/s) dùng session wall. Không tính lại thời gian copy hoặc cộng các thành phần hai lần.
-- [ ] Thêm biểu đồ thanh chồng cho các khoảng thời gian được đo và phần còn lại, với nhãn giây nguyên, nêu rõ selection không nằm trong session wall. Thêm phân phối thời gian mỗi bundle nếu biểu đồ thực sự giúp nhận ra biến thiên; không dùng tổng throughput từng bundle để tính tốc độ chung.
-- [ ] Nêu sampler RSS là process tree, disk là thư mục local staging, 2 giây/lần và có thể bỏ sót đỉnh; không phải dung lượng Drive. Dùng caption dưới chân mỗi bảng và giới hạn wrap như các bảng hiện có.
+- [ ] Add an appropriately numbered subsection in `m1/03-performance.ipynb`, renumbering later sections if necessary. Include a captioned summary table that wraps and scrolls horizontally when needed: ID, counts of downloaded/reused/failed bundles, actual and manifest bytes, session wall, selection, download, MD5 and copy durations, throughput, peak RSS and staging disk.
+- [ ] Report session wall of 1,913 seconds (~31 minutes 53 seconds): download 1,136 seconds, MD5 230 seconds, copy 507 seconds, and approximately 40 seconds remaining. Selection (~4 seconds) was measured separately before the session. Weighted download throughput is total newly downloaded bytes divided by total download seconds (~67.5 MB/s); session throughput (~40.1 MB/s) uses session wall. Do not recompute copy time or count components twice.
+- [ ] Add a stacked bar chart of measured time intervals and the remainder, labeled in whole seconds, stating that selection is outside session wall. Add the per-bundle time distribution only if it helps show variation; do not sum per-bundle throughputs to calculate overall throughput.
+- [ ] State that RSS samples the process tree and disk samples the local staging directory every two seconds, so peaks may be missed; disk is not Drive usage. Put captions under tables and use the existing wrapping limits.
 
-## 3. Phạm vi và mối liên hệ với crawl
+## 3. Scope and relationship to the crawl
 
-- [ ] Tính thêm một **ước lượng end-to-end** gồm thời gian benchmark tải S3 và khoảng thời gian nhóm crawl trên timeline chung. Dùng `session_wall_s` chưa làm tròn của lượt tải cộng với khoảng thời gian từ sampler crawl sớm nhất tới sampler crawl muộn nhất; không cộng tổng duration của các session crawl chồng lấn và không cộng lại retry, checkpoint hay copy vốn đã nằm trong thời gian được đo. Làm tròn giây khi hiển thị.
-- [ ] Ghi rõ lần tải S3 này là lượt chạy lại có benchmark; lần tải raw trước khi crawl chưa có audit benchmark. Vì lượt đo mới diễn ra sau crawl, kết quả cộng là **ước lượng ghép từ hai lần đo**, không phải wall-clock quan sát liên tục của lượt M1 gốc. Không xác nhận tốc độ tải cũ bằng tốc độ lượt này.
-- [ ] Giữ riêng các khoảng chưa đo: setup/mount, `selection_s` (báo riêng khoảng 4 giây), lấy manifest/snapshot, tải evidence và các bước khác ngoài sampler; không gọi ước lượng này là toàn bộ thời gian thực tế không thiếu bước. Nếu `selection_s` được tính thêm trong một chỉ số mở rộng, ghi công thức rõ ràng và không tính hai lần.
-- [ ] Giải thích MD5 xác minh file local trước copy; kích thước khác manifest không tự chứng minh hỏng nếu MD5 khớp. Copy/rename qua Drive FUSE không chứng minh đồng bộ bền vững. Manifest boundaries là candidate, không xác nhận nội dung member hoặc version; chưa có member-index hoặc readback độc lập.
-- [ ] Nếu cập nhật `m1/04-discussion.md`, chỉ thêm liên kết và giới hạn ngắn gọn; không lặp chi tiết benchmark trong Attempts & Effort. Giữ nguyên các thay đổi timing audit đang có ở local và các cập nhật M2 trên main.
+- [ ] Calculate an **estimated end-to-end time** combining the S3 download benchmark and the group crawl interval on the shared timeline. Add the unrounded download `session_wall_s` to the interval from the earliest crawl sampler start to the latest sampler end; do not sum overlapping crawl-session durations or add retry, checkpoint or copy time already included in measurements. Round seconds only for display.
+- [ ] State that the S3 download was a benchmarked rerun; the raw download before crawling had no benchmark audit. Since the new measurement followed the crawl, the sum is an **estimate combining two measurements**, not a continuously observed wall-clock time for the original M1 run. Do not use the rerun throughput to certify the old download speed.
+- [ ] Keep unmeasured intervals separate: setup/mount, `selection_s` (approximately 4 seconds, reported separately), manifest/snapshot retrieval, evidence download and other work outside the sampler. Do not call this an exhaustive actual elapsed time. If `selection_s` is added to an extended metric, show the formula and avoid double counting.
+- [ ] Explain that MD5 verifies local files before copying; a size difference from the manifest alone does not prove corruption if MD5 matches. Drive FUSE copy/rename does not prove durable synchronization. Manifest boundaries are candidates, not confirmation of member contents or versions; no member index or independent readback is available.
+- [ ] If updating `m1/04-discussion.md`, add only a link and a brief limitation; do not repeat benchmark details in Attempts & Effort. Preserve existing local timing-audit changes and M2 updates on main.
 
-## 4. Xác minh và bàn giao
+## 4. Verify and hand off
 
-- [ ] Chạy kiểm tra trích xuất trên evidence thật; đối chiếu output tổng với summary và events, kiểm tra đơn vị, mẫu số và hash. Xác nhận bảng, biểu đồ và chú thích có trong build; chạy các test hiện có và build/execution book khi môi trường hỗ trợ.
-- [ ] Báo rõ kết quả kiểm tra và mọi giới hạn build, chưa commit/push nếu chưa được yêu cầu.
+- [ ] Test extraction using real evidence; reconcile output totals with summary and events and check units, denominators and hashes. Confirm the table, chart and captions appear in the build; run existing tests and build/execute the book where the environment allows.
+- [ ] Report validation and any build limitations; do not commit or push unless requested.
