@@ -29,6 +29,11 @@ Project report for the course Introduction to Data Science (University of Scienc
   - [Discussion](m1/04-discussion.md)
 - **Section 2 — Milestone 2: Hierarchical Parsing and Standardization**
   - [Overview](m2/index.md)
+- **Section 3 — Milestone 3: Citation Matching**
+  - [Overview](m3/index.md)
+  - [Methodology](m3/01-methodology.md)
+  - [Evaluation](m3/02-evaluation.md)
+  - [Dataset release](m3/03-dataset-release.md)
 
 Last updated: 2026-10-30.
 
