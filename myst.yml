@@ -30,6 +30,12 @@ project:
         - file: m2/02-data-stats.ipynb
         - file: m2/03-performance.ipynb
         - file: m2/04-quality.ipynb
+    - title: "Milestone 3 — Citation Matching"
+      children:
+        - file: m3/index.md
+        - file: m3/01-methodology.md
+        - file: m3/02-evaluation.md
+        - file: m3/03-dataset-release.md
 site:
   template: book-theme
   options:
